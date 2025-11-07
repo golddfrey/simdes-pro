@@ -1,0 +1,97 @@
+[
+    {
+        "name": "Sulawesi Selatan",
+        "cities": [
+            {
+                "name": "Makassar",
+                "kecamatan": [
+                    {
+                        "name": "Panakkukang",
+                        "kelurahan": [
+                            { "name": "Panakkukang", "kode_pos": "90231" },
+                            { "name": "Mamajang", "kode_pos": "90232" },
+                            { "name": "Kaluku Bodoa", "kode_pos": "90233" }
+                        ]
+                    },
+                    {
+                        "name": "Rappocini",
+                        "kelurahan": [
+                            { "name": "Tamalate", "kode_pos": "90221" },
+                            { "name": "Tidung", "kode_pos": "90222" },
+                            { "name": "Rappocini", "kode_pos": "90223" },
+                            { "name": "Gunung Sari", "kode_pos": "90221" },
+                            {}
+                        ]
+                    },
+                    {
+                        "name": "Tamalanrea",
+                        "kelurahan": [
+                            { "name": "Tamalanrea", "kode_pos": "90223" },
+                            { "name": "Borong", "kode_pos": "90224" },
+                            { "name": "Bontoala", "kode_pos": "90225" }
+                        ]
+                    },
+                    {
+                        "name": "Tamalate",
+                        "kelurahan": [
+                            { "name": "Tamalate", "kode_pos": "90112" },
+                            {
+                                "name": "Bontoala Makassar",
+                                "kode_pos": "90113"
+                            },
+                            { "name": "Lakkang", "kode_pos": "90114" }
+                        ]
+                    },
+                    {
+                        "name": "Ujung Pandang",
+                        "kelurahan": [
+                            { "name": "Pampang", "kode_pos": "90111" },
+                            { "name": "Lannea", "kode_pos": "90115" },
+                            { "name": "Maccini", "kode_pos": "90116" }
+                        ]
+                    },
+                    {
+                        "name": "Mariso",
+                        "kelurahan": [
+                            { "name": "Mariso", "kode_pos": "90123" },
+                            { "name": "Tumbo'", "kode_pos": "90124" },
+                            { "name": "Lalang", "kode_pos": "90125" }
+                        ]
+                    },
+                    {
+                        "name": "Mamajang",
+                        "kelurahan": [
+                            { "name": "Mamajang", "kode_pos": "90131" },
+                            { "name": "Biringkanaya", "kode_pos": "90132" },
+                            { "name": "Pannampu", "kode_pos": "90133" }
+                        ]
+                    },
+                    {
+                        "name": "Biringkanaya",
+                        "kelurahan": [
+                            { "name": "Paccerakkang", "kode_pos": "90213" },
+                            { "name": "Panaikang", "kode_pos": "90214" },
+                            { "name": "Tidung", "kode_pos": "90215" }
+                        ]
+                    },
+                    {
+                        "name": "Tallo",
+                        "kelurahan": [
+                            { "name": "Tallo", "kode_pos": "90151" },
+                            { "name": "Sudiang", "kode_pos": "90152" },
+                            { "name": "Kandea", "kode_pos": "90153" }
+                        ]
+                    },
+                    {
+                        "name": "Manggala",
+                        "kelurahan": [
+                            { "name": "Manggala", "kode_pos": "90211" },
+                            { "name": "Mandala", "kode_pos": "90212" },
+                            { "name": "Tamamaung", "kode_pos": "90216" }
+                        ]
+                    }
+                ]
+            }
+        ]
+    }
+]
