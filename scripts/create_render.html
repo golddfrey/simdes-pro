@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="id" x-data="{ sidebarOpen: false, sidebarCollapsed: false }">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Tambah Kepala Keluarga - SimDes</title>
+  <!-- Tailwind via CDN for quick integration; replace with compiled CSS for production -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Livewire Styles --><style >[wire\:loading][wire\:loading], [wire\:loading\.delay][wire\:loading\.delay], [wire\:loading\.inline-block][wire\:loading\.inline-block], [wire\:loading\.inline][wire\:loading\.inline], [wire\:loading\.block][wire\:loading\.block], [wire\:loading\.flex][wire\:loading\.flex], [wire\:loading\.table][wire\:loading\.table], [wire\:loading\.grid][wire\:loading\.grid], [wire\:loading\.inline-flex][wire\:loading\.inline-flex] {display: none;}[wire\:loading\.delay\.none][wire\:loading\.delay\.none], [wire\:loading\.delay\.shortest][wire\:loading\.delay\.shortest], [wire\:loading\.delay\.shorter][wire\:loading\.delay\.shorter], [wire\:loading\.delay\.short][wire\:loading\.delay\.short], [wire\:loading\.delay\.default][wire\:loading\.delay\.default], [wire\:loading\.delay\.long][wire\:loading\.delay\.long], [wire\:loading\.delay\.longer][wire\:loading\.delay\.longer], [wire\:loading\.delay\.longest][wire\:loading\.delay\.longest] {display: none;}[wire\:offline][wire\:offline] {display: none;}[wire\:dirty]:not(textarea):not(input):not(select) {display: none;}:root {--livewire-progress-bar-color: #2299dd;}[x-cloak] {display: none !important;}[wire\:cloak] {display: none !important;}</style>
+  <!-- Alpine is provided via Livewire bundle; avoid loading Alpine CDN to prevent multiple instances -->
+  <style>
+    /* small helper to keep content area full height */
+    html,body,#app{height:100%;}
+    /* hide elements with x-cloak until Alpine initializes */
+    [x-cloak] { display: none !important; }
+  </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+  <div id="app" class="flex h-screen">
+    <!-- Mobile overlay sidebar -->
+    <div x-show="sidebarOpen" x-cloak class="fixed inset-0 z-40 md:hidden">
+      <div class="absolute inset-0 bg-black opacity-50" @click="sidebarOpen = false"></div>
+      <aside class="absolute left-0 top-0 bottom-0 w-64 bg-white border-r p-4 overflow-auto">
+        <div class="flex items-center justify-between mb-4">
+  <script>
+    // Livewire hook debugging: logs processed messages and errors
+    if (window.Livewire) {
+      try {
+        window.Livewire.hook('message.processed', (message, component) => {
+          console.log('Livewire: message processed for component', component?.name ?? component);
+        });
+
+        window.Livewire.hook('message.failed', (message, component) => {
+          console.warn('Livewire: message failed', message, component);
+        });
+      } catch (e) {
+        console.log('Livewire hook error', e);
+      }
+    }
+  </script>
+          <div class="font-bold text-lg">SimDes</div>
+          <button @click="sidebarOpen = false" class="p-2">&times;</button>
+        </div>
+        <nav>
+                      <a href="http://localhost:8000" class="block py-2 px-2 rounded hover:bg-gray-100">Home</a>
+            <a href="http://localhost:8000/admin/kepala" class="block py-2 px-2 rounded hover:bg-gray-100">Kepala Keluarga</a>
+            <a href="http://localhost:8000/admin/kepala/create" class="block py-2 px-2 rounded hover:bg-gray-100">Tambah Kepala</a>
+                  </nav>
+      </aside>
+    </div>
+
+    <!-- Desktop sidebar (collapsible) -->
+    <aside :class="sidebarCollapsed ? 'w-20' : 'w-64'" class="bg-white hidden md:block border-r transition-width duration-150">
+      <div class="p-4 flex items-center">
+        <div class="font-bold text-lg" x-show="!sidebarCollapsed" x-cloak>SimDes</div>
+        <div class="ml-auto">
+          <button class="p-1 rounded hover:bg-gray-100" @click="sidebarCollapsed = !sidebarCollapsed" title="Toggle sidebar">
+            <span x-text="sidebarCollapsed ? '›' : '‹'"></span>
+          </button>
+        </div>
+      </div>
+      <nav class="p-4">
+                  
+          <a href="http://localhost:8000/admin/dashboard" class="flex items-center py-2 px-2 rounded hover:bg-gray-100"><span class="flex-1" x-show="!sidebarCollapsed" x-cloak>Home</span></a>
+          <a href="http://localhost:8000/admin/kepala" class="flex items-center py-2 px-2 rounded hover:bg-gray-100"><span class="flex-1" x-show="!sidebarCollapsed" x-cloak>Kepala Keluarga</span></a>
+          <a href="http://localhost:8000/admin/kepala/create" class="flex items-center py-2 px-2 rounded hover:bg-gray-100"><span class="flex-1" x-show="!sidebarCollapsed" x-cloak>Tambah Kepala</span></a>
+            <a href="http://localhost:8000/admin/feedback" class="flex items-center py-2 px-2 rounded hover:bg-gray-100"><span class="flex-1" x-show="!sidebarCollapsed" x-cloak>Feedback</span></a>
+              </nav>
+    </aside>
+
+    <div class="flex-1 flex flex-col">
+      <!-- Topbar -->
+      <header class="bg-white border-b p-4 flex items-center justify-between">
+        <div class="flex items-center space-x-3">
+          <button class="md:hidden p-2" @click="sidebarOpen = !sidebarOpen">☰</button>
+          <div class="flex items-center space-x-3">
+            <img src="/logo.png" alt="logo" class="h-8 w-8 object-contain" onerror="this.style.display='none'" />
+            <h1 class="text-lg font-semibold">Tambah Kepala Keluarga</h1>
+          </div>
+        </div>
+
+        <div class="flex items-center space-x-4">
+          
+            <button title="Notifikasi" class="p-2 rounded hover:bg-gray-100">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 10-12 0v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" /></svg>
+            </button>
+
+            
+                        
+            
+          
+                      
+                  </div>
+      </header>
+
+      <!-- Content -->
+      <main class="flex-1 overflow-auto p-6">
+          <div wire:snapshot="{&quot;data&quot;:{&quot;query&quot;:&quot;&quot;,&quot;suggestions&quot;:[[],{&quot;s&quot;:&quot;arr&quot;}],&quot;selectedNik&quot;:&quot;&quot;,&quot;highlight&quot;:0,&quot;showModal&quot;:false,&quot;form&quot;:[{&quot;nik&quot;:&quot;&quot;,&quot;nama&quot;:&quot;&quot;,&quot;tempat_lahir&quot;:&quot;&quot;,&quot;tanggal_lahir&quot;:&quot;&quot;,&quot;agama&quot;:&quot;&quot;,&quot;jenis_kelamin&quot;:&quot;&quot;,&quot;nomor_telepon&quot;:&quot;&quot;},{&quot;s&quot;:&quot;arr&quot;}]},&quot;memo&quot;:{&quot;id&quot;:&quot;zf3wV5owDm0rf79U65Lx&quot;,&quot;name&quot;:&quot;admin.kepala-create&quot;,&quot;path&quot;:&quot;\/&quot;,&quot;method&quot;:&quot;GET&quot;,&quot;children&quot;:[],&quot;scripts&quot;:[],&quot;assets&quot;:[],&quot;errors&quot;:[],&quot;locale&quot;:&quot;en&quot;},&quot;checksum&quot;:&quot;cc875b71510798a2219f28f9f4ad02a7b3012b977343699294e0a420e7457b7d&quot;}" wire:effects="[]" wire:id="zf3wV5owDm0rf79U65Lx" class="max-w-3xl mx-auto px-6 py-8">
+  <h2 class="text-2xl font-semibold mb-6">Tambah Kepala Keluarga</h2>
+
+  <!--[if BLOCK]><![endif]--><!--[if ENDBLOCK]><![endif]-->
+
+  <form wire:submit.prevent="confirmSave" class="bg-white p-6 rounded shadow">
+    <div class="grid gap-4">
+      <div class="relative">
+        <label class="block text-sm">NIK</label>
+        <input
+          type="text"
+          wire:model.debounce.300ms="query"
+          wire:keydown.arrow-down.prevent="highlightNext"
+          wire:keydown.arrow-up.prevent="highlightPrev"
+          wire:keydown.enter.prevent="selectHighlighted"
+          class="w-full border rounded px-3 py-2"
+          placeholder="Ketik NIK atau nama untuk mencari"
+          autocomplete="off"
+          role="combobox"
+          aria-expanded="false"
+        >
+        <input type="hidden" wire:model="form.nik">
+
+        <!--[if BLOCK]><![endif]--><!--[if ENDBLOCK]><![endif]-->
+      </div>
+
+      <div>
+        <label class="block text-sm">Nama</label>
+        <input type="text" wire:model.defer="form.nama" class="w-full border rounded px-3 py-2"  required>
+      </div>
+
+      <div>
+        <label class="block text-sm">Tempat Lahir</label>
+        <input type="text" wire:model.defer="form.tempat_lahir" class="w-full border rounded px-3 py-2" >
+      </div>
+
+      <div>
+        <label class="block text-sm">Tanggal Lahir</label>
+        <input type="date" wire:model.defer="form.tanggal_lahir" class="w-full border rounded px-3 py-2" >
+      </div>
+
+      <div>
+        <label class="block text-sm">Agama</label>
+        <input type="text" wire:model.defer="form.agama" class="w-full border rounded px-3 py-2" >
+      </div>
+
+      <div>
+        <label class="block text-sm">Jenis Kelamin</label>
+        <select wire:model.defer="form.jenis_kelamin" class="w-full border rounded px-3 py-2" >
+          <option value="">-- Pilih --</option>
+          <option value="L">Laki-laki</option>
+          <option value="P">Perempuan</option>
+        </select>
+      </div>
+
+      <div>
+        <label class="block text-sm">Nomor Telepon</label>
+        <input type="text" wire:model.defer="form.nomor_telepon" class="w-full border rounded px-3 py-2">
+      </div>
+
+      <div class="flex items-center space-x-3">
+        <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded">Simpan</button>
+        <a href="http://localhost:8000/admin/kepala" class="px-4 py-2 border rounded">Batal</a>
+      </div>
+    </div>
+  </form>
+
+  
+  <!--[if BLOCK]><![endif]--><!--[if ENDBLOCK]><![endif]-->
+
+</div>
+      </main>
+    </div>
+  </div>
+
+    <!-- Livewire Scripts -->
+<script src="/livewire/livewire.js?id=df3a17f2"   data-csrf="" data-update-uri="/livewire/update" data-navigate-once="true"></script>
+  <script>
+    // Debug helper: show Livewire presence and log wire:click interactions
+    try {
+      console.log('Livewire present?', !!window.Livewire);
+      document.addEventListener('click', function (e) {
+        var el = e.target.closest('[wire\\:click], [wire\\:click\\.prevent], [wire\\:model]');
+        if (el) {
+          console.log('Clicked wire element:', el.tagName, el.outerHTML.slice(0,200));
+        }
+      }, true);
+    } catch (err) {
+      console.log('Livewire debug script error', err);
+    }
+  </script>
+</body>
+</html>

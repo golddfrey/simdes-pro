@@ -3,11 +3,12 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="csrf-token" content="{{ csrf_token() }}">
   <title>@yield('title', 'Dashboard') - SimDes</title>
   <!-- Tailwind via CDN for quick integration; replace with compiled CSS for production -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Alpine.js for interactivity used by Windmill -->
-  <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  @livewireStyles
+  <!-- Alpine is provided via Livewire bundle; avoid loading Alpine CDN to prevent multiple instances -->
   <style>
     /* small helper to keep content area full height */
     html,body,#app{height:100%;}
@@ -22,6 +23,22 @@
       <div class="absolute inset-0 bg-black opacity-50" @click="sidebarOpen = false"></div>
       <aside class="absolute left-0 top-0 bottom-0 w-64 bg-white border-r p-4 overflow-auto">
         <div class="flex items-center justify-between mb-4">
+  <script>
+    // Livewire hook debugging: logs processed messages and errors
+    if (window.Livewire) {
+      try {
+        window.Livewire.hook('message.processed', (message, component) => {
+          console.log('Livewire: message processed for component', component?.name ?? component);
+        });
+
+        window.Livewire.hook('message.failed', (message, component) => {
+          console.warn('Livewire: message failed', message, component);
+        });
+      } catch (e) {
+        console.log('Livewire hook error', e);
+      }
+    }
+  </script>
           <div class="font-bold text-lg">SimDes</div>
           <button @click="sidebarOpen = false" class="p-2">&times;</button>
         </div>
@@ -110,5 +127,33 @@
   </div>
 
   @stack('scripts')
+  @livewireScripts
+  <script>
+    // Debug helper: show Livewire presence and log wire:click interactions
+    try {
+      console.log('Livewire present?', !!window.Livewire);
+      if (window.Livewire) {
+        try {
+          Livewire.hook('message.sent', (message, component) => {
+            console.log('Livewire: message.sent', message, component?.name ?? component);
+          });
+          Livewire.hook('message.processed', (message, component) => {
+            console.log('Livewire: message.processed', component?.name ?? component);
+          });
+        } catch (e) {
+          console.debug('Livewire hook error', e);
+        }
+      }
+
+      document.addEventListener('click', function (e) {
+        var el = e.target.closest('[wire\\:click], [wire\\:click\\.prevent], [wire\\:model]');
+        if (el) {
+          console.log('Clicked wire element:', el.tagName, el.outerHTML.slice(0,200));
+        }
+      }, true);
+    } catch (err) {
+      console.log('Livewire debug script error', err);
+    }
+  </script>
 </body>
 </html>

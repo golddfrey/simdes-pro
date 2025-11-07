@@ -1,0 +1,262 @@
+<div class="max-w-6xl mx-auto px-6 py-8">
+  <div class="flex items-center justify-between mb-4">
+    <h1 class="text-2xl font-semibold">Data Kepala Keluarga</h1>
+    <div class="flex items-center space-x-2">
+      <input
+        id="kepala-search"
+        type="text"
+        wire:model.debounce.0ms="search"
+        placeholder="Cari nama atau NIK..."
+        class="border rounded px-3 py-2 "
+      />
+      <div wire:loading wire:target="search" class="text-sm text-gray-500">Mencari...</div>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div wire:key="kepala-201" class="bg-white rounded shadow p-6">
+        <div class="flex items-start justify-between">
+          <div>
+            <h3 class="text-lg font-semibold text-gray-800">Lasmanto Winarno</h3>
+            <p class="text-sm text-gray-500">NIK: 7371110511523430</p>
+            <p class="text-sm text-gray-500 mt-1">Anggota: <span class="font-medium text-gray-700">0</span></p>
+          </div>
+          <div class="text-right">
+            <button wire:click="toggleOpen(201)" class="inline-flex items-center px-3 py-2 bg-white border border-gray-200 text-gray-700 rounded-md shadow-sm hover:bg-gray-50 text-sm">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"/></svg>
+              <span>View more</span>
+            </button>
+          </div>
+        </div>
+
+  <div class="mt-4 anggota-list" style="display: none;">
+                      <div class="text-sm text-gray-500">Tidak ada anggota.</div>
+                  </div>
+      </div>
+          <div wire:key="kepala-101" class="bg-white rounded shadow p-6">
+        <div class="flex items-start justify-between">
+          <div>
+            <h3 class="text-lg font-semibold text-gray-800">Kuncara Prayoga</h3>
+            <p class="text-sm text-gray-500">NIK: 7371154304129487</p>
+            <p class="text-sm text-gray-500 mt-1">Anggota: <span class="font-medium text-gray-700">1</span></p>
+          </div>
+          <div class="text-right">
+            <button wire:click="toggleOpen(101)" class="inline-flex items-center px-3 py-2 bg-white border border-gray-200 text-gray-700 rounded-md shadow-sm hover:bg-gray-50 text-sm">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"/></svg>
+              <span>View more</span>
+            </button>
+          </div>
+        </div>
+
+  <div class="mt-4 anggota-list" style="display: none;">
+                      <div class="text-sm text-gray-500">Tidak ada anggota.</div>
+                  </div>
+      </div>
+          <div wire:key="kepala-102" class="bg-white rounded shadow p-6">
+        <div class="flex items-start justify-between">
+          <div>
+            <h3 class="text-lg font-semibold text-gray-800">Kemal Langgeng Prasetyo</h3>
+            <p class="text-sm text-gray-500">NIK: 7371148701822666</p>
+            <p class="text-sm text-gray-500 mt-1">Anggota: <span class="font-medium text-gray-700">1</span></p>
+          </div>
+          <div class="text-right">
+            <button wire:click="toggleOpen(102)" class="inline-flex items-center px-3 py-2 bg-white border border-gray-200 text-gray-700 rounded-md shadow-sm hover:bg-gray-50 text-sm">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"/></svg>
+              <span>View more</span>
+            </button>
+          </div>
+        </div>
+
+  <div class="mt-4 anggota-list" style="display: none;">
+                      <div class="text-sm text-gray-500">Tidak ada anggota.</div>
+                  </div>
+      </div>
+          <div wire:key="kepala-103" class="bg-white rounded shadow p-6">
+        <div class="flex items-start justify-between">
+          <div>
+            <h3 class="text-lg font-semibold text-gray-800">Jasmani Cakrajiya Wijaya</h3>
+            <p class="text-sm text-gray-500">NIK: 7371116795239494</p>
+            <p class="text-sm text-gray-500 mt-1">Anggota: <span class="font-medium text-gray-700">1</span></p>
+          </div>
+          <div class="text-right">
+            <button wire:click="toggleOpen(103)" class="inline-flex items-center px-3 py-2 bg-white border border-gray-200 text-gray-700 rounded-md shadow-sm hover:bg-gray-50 text-sm">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"/></svg>
+              <span>View more</span>
+            </button>
+          </div>
+        </div>
+
+  <div class="mt-4 anggota-list" style="display: none;">
+                      <div class="text-sm text-gray-500">Tidak ada anggota.</div>
+                  </div>
+      </div>
+          <div wire:key="kepala-104" class="bg-white rounded shadow p-6">
+        <div class="flex items-start justify-between">
+          <div>
+            <h3 class="text-lg font-semibold text-gray-800">Dariati Tasnim Gunarto</h3>
+            <p class="text-sm text-gray-500">NIK: 7371112333286442</p>
+            <p class="text-sm text-gray-500 mt-1">Anggota: <span class="font-medium text-gray-700">1</span></p>
+          </div>
+          <div class="text-right">
+            <button wire:click="toggleOpen(104)" class="inline-flex items-center px-3 py-2 bg-white border border-gray-200 text-gray-700 rounded-md shadow-sm hover:bg-gray-50 text-sm">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"/></svg>
+              <span>View more</span>
+            </button>
+          </div>
+        </div>
+
+  <div class="mt-4 anggota-list" style="display: none;">
+                      <div class="text-sm text-gray-500">Tidak ada anggota.</div>
+                  </div>
+      </div>
+          <div wire:key="kepala-105" class="bg-white rounded shadow p-6">
+        <div class="flex items-start justify-between">
+          <div>
+            <h3 class="text-lg font-semibold text-gray-800">Maras Januar</h3>
+            <p class="text-sm text-gray-500">NIK: 7371114545673136</p>
+            <p class="text-sm text-gray-500 mt-1">Anggota: <span class="font-medium text-gray-700">1</span></p>
+          </div>
+          <div class="text-right">
+            <button wire:click="toggleOpen(105)" class="inline-flex items-center px-3 py-2 bg-white border border-gray-200 text-gray-700 rounded-md shadow-sm hover:bg-gray-50 text-sm">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"/></svg>
+              <span>View more</span>
+            </button>
+          </div>
+        </div>
+
+  <div class="mt-4 anggota-list" style="display: none;">
+                      <div class="text-sm text-gray-500">Tidak ada anggota.</div>
+                  </div>
+      </div>
+          <div wire:key="kepala-106" class="bg-white rounded shadow p-6">
+        <div class="flex items-start justify-between">
+          <div>
+            <h3 class="text-lg font-semibold text-gray-800">Mujur Harjo Tampubolon</h3>
+            <p class="text-sm text-gray-500">NIK: 7371130364833251</p>
+            <p class="text-sm text-gray-500 mt-1">Anggota: <span class="font-medium text-gray-700">1</span></p>
+          </div>
+          <div class="text-right">
+            <button wire:click="toggleOpen(106)" class="inline-flex items-center px-3 py-2 bg-white border border-gray-200 text-gray-700 rounded-md shadow-sm hover:bg-gray-50 text-sm">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"/></svg>
+              <span>View more</span>
+            </button>
+          </div>
+        </div>
+
+  <div class="mt-4 anggota-list" style="display: none;">
+                      <div class="text-sm text-gray-500">Tidak ada anggota.</div>
+                  </div>
+      </div>
+          <div wire:key="kepala-107" class="bg-white rounded shadow p-6">
+        <div class="flex items-start justify-between">
+          <div>
+            <h3 class="text-lg font-semibold text-gray-800">Irwan Sitorus</h3>
+            <p class="text-sm text-gray-500">NIK: 7371130144587008</p>
+            <p class="text-sm text-gray-500 mt-1">Anggota: <span class="font-medium text-gray-700">1</span></p>
+          </div>
+          <div class="text-right">
+            <button wire:click="toggleOpen(107)" class="inline-flex items-center px-3 py-2 bg-white border border-gray-200 text-gray-700 rounded-md shadow-sm hover:bg-gray-50 text-sm">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"/></svg>
+              <span>View more</span>
+            </button>
+          </div>
+        </div>
+
+  <div class="mt-4 anggota-list" style="display: none;">
+                      <div class="text-sm text-gray-500">Tidak ada anggota.</div>
+                  </div>
+      </div>
+          <div wire:key="kepala-108" class="bg-white rounded shadow p-6">
+        <div class="flex items-start justify-between">
+          <div>
+            <h3 class="text-lg font-semibold text-gray-800">Karta Waskita</h3>
+            <p class="text-sm text-gray-500">NIK: 7371127549522134</p>
+            <p class="text-sm text-gray-500 mt-1">Anggota: <span class="font-medium text-gray-700">1</span></p>
+          </div>
+          <div class="text-right">
+            <button wire:click="toggleOpen(108)" class="inline-flex items-center px-3 py-2 bg-white border border-gray-200 text-gray-700 rounded-md shadow-sm hover:bg-gray-50 text-sm">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"/></svg>
+              <span>View more</span>
+            </button>
+          </div>
+        </div>
+
+  <div class="mt-4 anggota-list" style="display: none;">
+                      <div class="text-sm text-gray-500">Tidak ada anggota.</div>
+                  </div>
+      </div>
+          <div wire:key="kepala-109" class="bg-white rounded shadow p-6">
+        <div class="flex items-start justify-between">
+          <div>
+            <h3 class="text-lg font-semibold text-gray-800">Xanana Mandala</h3>
+            <p class="text-sm text-gray-500">NIK: 7371142124227368</p>
+            <p class="text-sm text-gray-500 mt-1">Anggota: <span class="font-medium text-gray-700">1</span></p>
+          </div>
+          <div class="text-right">
+            <button wire:click="toggleOpen(109)" class="inline-flex items-center px-3 py-2 bg-white border border-gray-200 text-gray-700 rounded-md shadow-sm hover:bg-gray-50 text-sm">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"/></svg>
+              <span>View more</span>
+            </button>
+          </div>
+        </div>
+
+  <div class="mt-4 anggota-list" style="display: none;">
+                      <div class="text-sm text-gray-500">Tidak ada anggota.</div>
+                  </div>
+      </div>
+      </div>
+
+  <div class="mt-6"><nav role="navigation" aria-label="Pagination Navigation" class="flex items-center justify-between">
+    <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+      <div>
+        <p class="text-sm text-gray-700 leading-5">
+          Menampilkan
+          <span class="font-medium">1</span>
+          hingga
+          <span class="font-medium">10</span>
+          dari
+          <span class="font-medium">201</span>
+          hasil
+        </p>
+      </div>
+
+      <div>
+        <span class="relative z-0 inline-flex shadow-sm rounded-md">
+          
+                      <span aria-disabled="true" aria-label="Previous">
+              <span class="relative inline-flex items-center px-2 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 cursor-default rounded-l-md">&lt;</span>
+            </span>
+          
+          
+                                    <span aria-current="page" class="relative inline-flex items-center px-4 py-2 -ml-px text-sm font-medium text-white bg-indigo-600 border border-gray-300">1</span>
+                                                <button wire:click.prevent="gotoPage(2)" class="relative inline-flex items-center px-4 py-2 -ml-px text-sm font-medium text-gray-700 bg-white border border-gray-300 hover:bg-gray-50">2</button>
+                                                <button wire:click.prevent="gotoPage(3)" class="relative inline-flex items-center px-4 py-2 -ml-px text-sm font-medium text-gray-700 bg-white border border-gray-300 hover:bg-gray-50">3</button>
+                                                <button wire:click.prevent="gotoPage(4)" class="relative inline-flex items-center px-4 py-2 -ml-px text-sm font-medium text-gray-700 bg-white border border-gray-300 hover:bg-gray-50">4</button>
+                                                <button wire:click.prevent="gotoPage(5)" class="relative inline-flex items-center px-4 py-2 -ml-px text-sm font-medium text-gray-700 bg-white border border-gray-300 hover:bg-gray-50">5</button>
+                                                <button wire:click.prevent="gotoPage(6)" class="relative inline-flex items-center px-4 py-2 -ml-px text-sm font-medium text-gray-700 bg-white border border-gray-300 hover:bg-gray-50">6</button>
+                                                <button wire:click.prevent="gotoPage(7)" class="relative inline-flex items-center px-4 py-2 -ml-px text-sm font-medium text-gray-700 bg-white border border-gray-300 hover:bg-gray-50">7</button>
+                                                <button wire:click.prevent="gotoPage(8)" class="relative inline-flex items-center px-4 py-2 -ml-px text-sm font-medium text-gray-700 bg-white border border-gray-300 hover:bg-gray-50">8</button>
+                                                <button wire:click.prevent="gotoPage(9)" class="relative inline-flex items-center px-4 py-2 -ml-px text-sm font-medium text-gray-700 bg-white border border-gray-300 hover:bg-gray-50">9</button>
+                                                <button wire:click.prevent="gotoPage(10)" class="relative inline-flex items-center px-4 py-2 -ml-px text-sm font-medium text-gray-700 bg-white border border-gray-300 hover:bg-gray-50">10</button>
+                                                <button wire:click.prevent="gotoPage(11)" class="relative inline-flex items-center px-4 py-2 -ml-px text-sm font-medium text-gray-700 bg-white border border-gray-300 hover:bg-gray-50">11</button>
+                                                <button wire:click.prevent="gotoPage(12)" class="relative inline-flex items-center px-4 py-2 -ml-px text-sm font-medium text-gray-700 bg-white border border-gray-300 hover:bg-gray-50">12</button>
+                                                <button wire:click.prevent="gotoPage(13)" class="relative inline-flex items-center px-4 py-2 -ml-px text-sm font-medium text-gray-700 bg-white border border-gray-300 hover:bg-gray-50">13</button>
+                                                <button wire:click.prevent="gotoPage(14)" class="relative inline-flex items-center px-4 py-2 -ml-px text-sm font-medium text-gray-700 bg-white border border-gray-300 hover:bg-gray-50">14</button>
+                                                <button wire:click.prevent="gotoPage(15)" class="relative inline-flex items-center px-4 py-2 -ml-px text-sm font-medium text-gray-700 bg-white border border-gray-300 hover:bg-gray-50">15</button>
+                                                <button wire:click.prevent="gotoPage(16)" class="relative inline-flex items-center px-4 py-2 -ml-px text-sm font-medium text-gray-700 bg-white border border-gray-300 hover:bg-gray-50">16</button>
+                                                <button wire:click.prevent="gotoPage(17)" class="relative inline-flex items-center px-4 py-2 -ml-px text-sm font-medium text-gray-700 bg-white border border-gray-300 hover:bg-gray-50">17</button>
+                                                <button wire:click.prevent="gotoPage(18)" class="relative inline-flex items-center px-4 py-2 -ml-px text-sm font-medium text-gray-700 bg-white border border-gray-300 hover:bg-gray-50">18</button>
+                                                <button wire:click.prevent="gotoPage(19)" class="relative inline-flex items-center px-4 py-2 -ml-px text-sm font-medium text-gray-700 bg-white border border-gray-300 hover:bg-gray-50">19</button>
+                                                <button wire:click.prevent="gotoPage(20)" class="relative inline-flex items-center px-4 py-2 -ml-px text-sm font-medium text-gray-700 bg-white border border-gray-300 hover:bg-gray-50">20</button>
+                                                <button wire:click.prevent="gotoPage(21)" class="relative inline-flex items-center px-4 py-2 -ml-px text-sm font-medium text-gray-700 bg-white border border-gray-300 hover:bg-gray-50">21</button>
+                      
+          
+                      <button wire:click.prevent="gotoPage(2)" rel="next" class="relative inline-flex items-center px-2 py-2 -ml-px text-sm font-medium text-gray-700 bg-white border border-gray-300 hover:bg-gray-50 rounded-r-md" aria-label="Next">&gt;</button>
+                  </span>
+      </div>
+    </div>
+  </nav>
+</div>
+</div>
+
+
