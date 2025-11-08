@@ -3,12 +3,13 @@
     <h2 class="text-2xl font-semibold">Data Penduduk</h2>
 
     <!-- Controls: search, per-page selector, add button -->
-    <div class="flex items-center space-x-3">
-      <!-- Live search: debounce to avoid too many requests -->
-      <input type="text" wire:model.debounce.300ms="search" placeholder="Cari nama, NIK, alamat..." class="border rounded px-3 py-2" />
+  <div class="flex items-center space-x-3">
+  <!-- Live search: gunakan wire:input agar setiap karakter memicu update Livewire (lebih longgar debounce untuk mengurangi request) -->
+  <input type="text" wire:input.debounce.500ms="$set('search', $event.target.value)" placeholder="Cari nama, NIK, alamat..." class="border rounded px-3 py-2" />
 
       <!-- Per-page selector: 10/50/100 -->
-      <select wire:model="perPage" class="border rounded px-2 py-2">
+      <!-- perPage: gunakan wire:change untuk memastikan perubahan langsung dikirim ke server -->
+      <select wire:change="$set('perPage', $event.target.value)" class="border rounded px-2 py-2">
         @foreach($perPageOptions as $opt)
           <option value="{{ $opt }}">{{ $opt }} / page</option>
         @endforeach
@@ -84,15 +85,15 @@
           <th class="px-4 py-2">
             <!-- Age filter: min / max (years) -->
             <div class="flex items-center space-x-2">
-              <input type="number" min="0" wire:model.debounce.500ms="ageMin" placeholder="Min" class="w-20 border rounded px-2 py-1 text-sm" />
+              <input type="number" min="0" wire:input.debounce.500ms="$set('ageMin', $event.target.value)" placeholder="Min" class="w-20 border rounded px-2 py-1 text-sm" />
               <span class="text-sm">-</span>
-              <input type="number" min="0" wire:model.debounce.500ms="ageMax" placeholder="Max" class="w-20 border rounded px-2 py-1 text-sm" />
+              <input type="number" min="0" wire:input.debounce.500ms="$set('ageMax', $event.target.value)" placeholder="Max" class="w-20 border rounded px-2 py-1 text-sm" />
             </div>
           </th>
           <th class="px-4 py-2"></th>
           <th class="px-4 py-2 text-right">
             <!-- Clear filters button -->
-            <button wire:click="resetPage" class="text-sm text-gray-600">Reset</button>
+            <button wire:click="resetFilters" class="text-sm text-gray-600">Reset</button>
           </th>
         </tr>
       </thead>

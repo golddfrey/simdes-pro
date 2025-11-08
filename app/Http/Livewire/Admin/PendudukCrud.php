@@ -15,7 +15,7 @@ class PendudukCrud extends Component
 
     public $search = '';
     // number of items per page (user-selectable)
-    public $perPage = 15;
+    public $perPage = 10;
     // available per-page options
     public $perPageOptions = [10, 50, 100];
     // sorting
@@ -64,6 +64,16 @@ class PendudukCrud extends Component
         'form.pekerjaan' => 'nullable|string',
     ];
 
+    // Persist common state in query string so pagination and filters play nicely
+    protected $queryString = [
+        'search' => ['except' => ''],
+        'perPage' => ['except' => 10],
+        'ageMin' => ['except' => ''],
+        'ageMax' => ['except' => ''],
+        'sortBy' => ['except' => 'nama'],
+        'sortDir' => ['except' => 'asc'],
+    ];
+
     public function updatedSearch()
     {
         $this->resetPage();
@@ -72,6 +82,15 @@ class PendudukCrud extends Component
     // When perPage changes, go back to page 1
     public function updatedPerPage()
     {
+        $this->resetPage();
+    }
+
+    // reset filters helper
+    public function resetFilters()
+    {
+        $this->ageMin = null;
+        $this->ageMax = null;
+        $this->search = '';
         $this->resetPage();
     }
 
@@ -238,15 +257,18 @@ class PendudukCrud extends Component
             $this->ageMin = $this->ageMax;
             $this->ageMax = $tmp;
         }
-        // If user sets min/max age, we compute birthdate bounds.
+        // If user sets min/max age, we compute birthdate bounds. Use whereBetween when both present.
         $today = Carbon::now();
-        if ($this->ageMin !== null && $this->ageMin !== '') {
-            // AgeMin = e.g. 30 means birthdate <= today - 30 years
+        $hasMin = $this->ageMin !== null && $this->ageMin !== '';
+        $hasMax = $this->ageMax !== null && $this->ageMax !== '';
+        if ($hasMin && $hasMax) {
+            $upper = $today->copy()->subYears((int) $this->ageMin)->endOfDay()->toDateString();
+            $lower = $today->copy()->subYears((int) $this->ageMax)->startOfDay()->toDateString();
+            $query->whereBetween('tanggal_lahir', [$lower, $upper]);
+        } elseif ($hasMin) {
             $upper = $today->copy()->subYears((int) $this->ageMin)->endOfDay()->toDateString();
             $query->where('tanggal_lahir', '<=', $upper);
-        }
-        if ($this->ageMax !== null && $this->ageMax !== '') {
-            // AgeMax = e.g. 40 means birthdate >= today - 40 years
+        } elseif ($hasMax) {
             $lower = $today->copy()->subYears((int) $this->ageMax)->startOfDay()->toDateString();
             $query->where('tanggal_lahir', '>=', $lower);
         }
@@ -262,11 +284,22 @@ class PendudukCrud extends Component
             $query->orderBy($column, $this->sortDir);
         }
 
-        // Use simplePaginate to avoid expensive COUNT(*) on large tables.
-        // simplePaginate performs a LIMIT+1 fetch and does not calculate total rows.
         // Select only the columns needed for the table to reduce IO
-        $penduduks = $query->select(['id','nik','nama','jenis_kelamin','alamat','tanggal_lahir'])
-            ->simplePaginate($this->perPage);
+        $perPage = (int) $this->perPage ?: 10;
+        $selectCols = ['id','nik','nama','jenis_kelamin','alamat','tanggal_lahir'];
+
+        // If the user is actively searching or filtering by age, use simplePaginate()
+        // to avoid a heavy COUNT(*) (faster for interactive searches). When no
+        // search/filters are active, return full paginate() so the UI can show
+        // numbered pages.
+        $isFiltering = ($q && trim($q) !== '') || $hasMin || $hasMax;
+        if ($isFiltering) {
+            $penduduks = $query->select($selectCols)
+                ->simplePaginate($perPage)->withQueryString();
+        } else {
+            $penduduks = $query->select($selectCols)
+                ->paginate($perPage)->withQueryString();
+        }
 
         // normal render path — no verbose logging
 

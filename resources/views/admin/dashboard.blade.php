@@ -1,7 +1,7 @@
 
 
 @section('content')
-<div class="max-w-4xl mx-auto px-6 py-8">
+<div class="max-w-6xl mx-auto px-6 py-8">
 </* cards and charts */>
   <h1 class="text-2xl font-semibold mb-4">Admin Dashboard</h1>
 
