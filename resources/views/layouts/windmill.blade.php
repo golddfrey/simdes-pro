@@ -52,6 +52,7 @@
           @else
             <a href="{{ route('home') }}" class="block py-2 px-2 rounded hover:bg-gray-100">Home</a>
             <a href="{{ route('admin.kepala.index') }}" class="block py-2 px-2 rounded hover:bg-gray-100">Kepala Keluarga</a>
+            <a href="{{ route('admin.penduduk.index') }}" class="block py-2 px-2 rounded hover:bg-gray-100">Penduduk</a>
             <a href="{{ route('admin.kepala.create') }}" class="block py-2 px-2 rounded hover:bg-gray-100">Tambah Kepala</a>
           @endif
         </nav>
@@ -80,6 +81,7 @@
           {{-- Default sidebar (admin / public) --}}
           <a href="{{ route('admin.dashboard') }}" class="flex items-center py-2 px-2 rounded hover:bg-gray-100"><span class="flex-1" x-show="!sidebarCollapsed" x-cloak>Home</span></a>
           <a href="{{ route('admin.kepala.index') }}" class="flex items-center py-2 px-2 rounded hover:bg-gray-100"><span class="flex-1" x-show="!sidebarCollapsed" x-cloak>Kepala Keluarga</span></a>
+          <a href="{{ route('admin.penduduk.index') }}" class="flex items-center py-2 px-2 rounded hover:bg-gray-100"><span class="flex-1" x-show="!sidebarCollapsed" x-cloak>Penduduk</span></a>
           <a href="{{ route('admin.kepala.create') }}" class="flex items-center py-2 px-2 rounded hover:bg-gray-100"><span class="flex-1" x-show="!sidebarCollapsed" x-cloak>Tambah Kepala</span></a>
             <a href="{{ route('admin.feedback.index') }}" class="flex items-center py-2 px-2 rounded hover:bg-gray-100"><span class="flex-1" x-show="!sidebarCollapsed" x-cloak>Feedback</span></a>
         @endif

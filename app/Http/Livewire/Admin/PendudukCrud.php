@@ -5,6 +5,8 @@ namespace App\Http\Livewire\Admin;
 use Livewire\Component;
 use Livewire\WithPagination;
 use App\Models\Penduduk;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class PendudukCrud extends Component
 {
@@ -110,13 +112,37 @@ class PendudukCrud extends Component
 
     public function render()
     {
+        $start = microtime(true);
+        // enable query log for diagnosis (temporary)
+        DB::flushQueryLog();
+        DB::enableQueryLog();
+
         $q = $this->search;
         $query = Penduduk::query();
         if ($q) {
             $like = "%{$q}%";
             $query->where('nama', 'like', $like)->orWhere('nik', 'like', $like)->orWhere('alamat', 'like', $like);
         }
-        $penduduks = $query->orderBy('nama')->paginate($this->perPage);
+        // Use simplePaginate to avoid expensive COUNT(*) on large tables.
+        // simplePaginate performs a LIMIT+1 fetch and does not calculate total rows.
+        // Select only the columns needed for the table to reduce IO
+        $penduduks = $query->select(['id','nik','nama','jenis_kelamin','alamat'])
+            ->orderBy('nama')
+            ->simplePaginate($this->perPage);
+
+        $queries = DB::getQueryLog();
+        $duration = microtime(true) - $start;
+        Log::info("[PendudukCrud] render: duration={duration}s, queries={count}", [
+            'duration' => round($duration, 3),
+            'count' => count($queries),
+        ]);
+
+        // log sample queries for inspection
+        if (count($queries) > 0) {
+            $sample = array_slice($queries, 0, 10);
+            Log::debug('[PendudukCrud] sample queries', $sample);
+        }
+
         return view('livewire.admin.penduduk-crud', compact('penduduks'));
     }
 }
