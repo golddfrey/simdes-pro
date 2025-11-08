@@ -5,8 +5,7 @@ namespace App\Http\Livewire\Admin;
 use Livewire\Component;
 use Livewire\WithPagination;
 use App\Models\Penduduk;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Carbon;
 
 class PendudukCrud extends Component
 {
@@ -15,9 +14,26 @@ class PendudukCrud extends Component
     protected $paginationTheme = 'tailwind';
 
     public $search = '';
+    // number of items per page (user-selectable)
     public $perPage = 15;
+    // available per-page options
+    public $perPageOptions = [10, 50, 100];
+    // sorting
+    public $sortBy = 'nama'; // default sort column
+    public $sortDir = 'asc'; // asc or desc
+    // age filters (in years)
+    public $ageMin = null;
+    public $ageMax = null;
     public $showForm = false;
     public $editingId = null;
+    // detail modal
+    public $showDetail = false;
+    public $detailPenduduk = null;
+
+    // select options
+    public $agamaOptions = ['Islam','Kristen','Katolik','Hindu','Buddha','Konghucu','Lainnya'];
+    public $statusOptions = ['Belum Kawin','Kawin','Cerai Hidup','Cerai Mati'];
+    public $pekerjaanOptions = ['Pegawai Negeri','Karyawan Swasta','Wirausaha','Pensiunan','Tidak Ada'];
 
     public $form = [
         'nik' => '',
@@ -26,22 +42,69 @@ class PendudukCrud extends Component
         'tempat_lahir' => '',
         'tanggal_lahir' => '',
         'agama' => '',
+        'status_perkawinan' => '',
+        'pekerjaan' => '',
         'nomor_telepon' => '',
         'alamat' => '',
         'kecamatan' => '',
         'kelurahan' => '',
         'kota' => 'Kota Makassar',
     ];
+    // confirmation modal before saving
+    public $confirmingSave = false;
+    // immediate saved message for UI
+    public $savedMessage = null;
 
     protected $rules = [
         'form.nik' => 'required|string|size:16|unique:penduduks,nik',
         'form.nama' => 'required|string|max:255',
         'form.jenis_kelamin' => 'nullable|in:L,P',
         'form.tanggal_lahir' => 'nullable|date',
+        'form.status_perkawinan' => 'nullable|string',
+        'form.pekerjaan' => 'nullable|string',
     ];
 
     public function updatedSearch()
     {
+        $this->resetPage();
+    }
+
+    // When perPage changes, go back to page 1
+    public function updatedPerPage()
+    {
+        $this->resetPage();
+    }
+
+    // When filters/sort change, reset pagination to first page
+    public function updatedSortBy()
+    {
+        $this->resetPage();
+    }
+
+    public function updatedSortDir()
+    {
+        $this->resetPage();
+    }
+
+    public function updatedAgeMin()
+    {
+        $this->resetPage();
+    }
+
+    public function updatedAgeMax()
+    {
+        $this->resetPage();
+    }
+
+    // Toggle sorting: if same column, flip direction; otherwise set new column asc
+    public function sortByColumn($column)
+    {
+        if ($this->sortBy === $column) {
+            $this->sortDir = $this->sortDir === 'asc' ? 'desc' : 'asc';
+        } else {
+            $this->sortBy = $column;
+            $this->sortDir = 'asc';
+        }
         $this->resetPage();
     }
 
@@ -62,6 +125,8 @@ class PendudukCrud extends Component
             'tempat_lahir' => $p->tempat_lahir,
             'tanggal_lahir' => optional($p->tanggal_lahir)->format('Y-m-d') ?? ($p->tanggal_lahir ? explode('T',$p->tanggal_lahir)[0] : ''),
             'agama' => $p->agama,
+            'status_perkawinan' => $p->status_perkawinan ?? '',
+            'pekerjaan' => $p->pekerjaan ?? '',
             'nomor_telepon' => $p->nomor_telepon,
             'alamat' => $p->alamat,
             'kecamatan' => $p->kecamatan,
@@ -77,19 +142,57 @@ class PendudukCrud extends Component
 
     public function save()
     {
+        // When editing, ensure the unique rule for NIK ignores the current record id
+        if ($this->editingId) {
+            $this->rules['form.nik'] = 'required|string|size:16|unique:penduduks,nik,'.$this->editingId.',id';
+        } else {
+            $this->rules['form.nik'] = 'required|string|size:16|unique:penduduks,nik';
+        }
+
         $this->validate();
+
+        // Only save columns that actually exist in the penduduks table to avoid SQL errors
+        $data = [];
+        foreach ($this->form as $k => $v) {
+            if (\Illuminate\Support\Facades\Schema::hasColumn('penduduks', $k)) {
+                $data[$k] = $v;
+            }
+        }
 
         if ($this->editingId) {
             $p = Penduduk::findOrFail($this->editingId);
-            $p->update($this->form);
+            $p->update($data);
             session()->flash('success', 'Penduduk diperbarui.');
+            $this->savedMessage = 'Penduduk diperbarui.';
         } else {
-            Penduduk::create($this->form);
+            Penduduk::create($data);
             session()->flash('success', 'Penduduk dibuat.');
+            $this->savedMessage = 'Penduduk dibuat.';
         }
 
         $this->showForm = false;
         $this->resetPage();
+    }
+
+    public function confirmSave()
+    {
+        $this->confirmingSave = true;
+    }
+
+    public function confirmAndSave()
+    {
+        // call existing save flow
+        $this->save();
+        $this->confirmingSave = false;
+    }
+
+    public function showDetail($id)
+    {
+        $p = Penduduk::find($id);
+        if ($p) {
+            $this->detailPenduduk = $p->toArray();
+            $this->showDetail = true;
+        }
     }
 
     public function delete($id)
@@ -105,43 +208,67 @@ class PendudukCrud extends Component
     protected function resetForm()
     {
         $this->form = [
-            'nik' => '', 'nama' => '', 'jenis_kelamin' => '', 'tempat_lahir' => '', 'tanggal_lahir' => '', 'agama' => '', 'nomor_telepon' => '', 'alamat' => '', 'kecamatan' => '', 'kelurahan' => '', 'kota' => 'Kota Makassar'
+            'nik' => '', 'nama' => '', 'jenis_kelamin' => '', 'tempat_lahir' => '', 'tanggal_lahir' => '', 'agama' => '', 'status_perkawinan' => '', 'pekerjaan' => '', 'nomor_telepon' => '', 'alamat' => '', 'kecamatan' => '', 'kelurahan' => '', 'kota' => 'Kota Makassar'
         ];
         $this->rules['form.nik'] = 'required|string|size:16|unique:penduduks,nik';
     }
 
     public function render()
     {
-        $start = microtime(true);
-        // enable query log for diagnosis (temporary)
-        DB::flushQueryLog();
-        DB::enableQueryLog();
+    // render without diagnostic query logging in normal operation
 
         $q = $this->search;
         $query = Penduduk::query();
+
+        // --- Search ---
         if ($q) {
             $like = "%{$q}%";
-            $query->where('nama', 'like', $like)->orWhere('nik', 'like', $like)->orWhere('alamat', 'like', $like);
+            $query->where(function ($sub) use ($like) {
+                $sub->where('nama', 'like', $like)
+                    ->orWhere('nik', 'like', $like)
+                    ->orWhere('alamat', 'like', $like);
+            });
         }
+
+        // --- Age filtering (convert ages to tanggal_lahir range) ---
+        // normalize if user accidentally entered min > max
+        if ($this->ageMin !== null && $this->ageMax !== null && $this->ageMin !== '' && $this->ageMax !== '' && (int)$this->ageMin > (int)$this->ageMax) {
+            // swap to keep logical order
+            $tmp = $this->ageMin;
+            $this->ageMin = $this->ageMax;
+            $this->ageMax = $tmp;
+        }
+        // If user sets min/max age, we compute birthdate bounds.
+        $today = Carbon::now();
+        if ($this->ageMin !== null && $this->ageMin !== '') {
+            // AgeMin = e.g. 30 means birthdate <= today - 30 years
+            $upper = $today->copy()->subYears((int) $this->ageMin)->endOfDay()->toDateString();
+            $query->where('tanggal_lahir', '<=', $upper);
+        }
+        if ($this->ageMax !== null && $this->ageMax !== '') {
+            // AgeMax = e.g. 40 means birthdate >= today - 40 years
+            $lower = $today->copy()->subYears((int) $this->ageMax)->startOfDay()->toDateString();
+            $query->where('tanggal_lahir', '>=', $lower);
+        }
+
+        // --- Sorting ---
+        // Support sorting by 'nama', 'nik' and 'umur' (umur uses tanggal_lahir direction reversed)
+        if ($this->sortBy === 'umur') {
+            // when sorting by umur asc, oldest first -> tanggal_lahir asc (earlier date = older)
+            $dir = $this->sortDir === 'asc' ? 'asc' : 'desc';
+            $query->orderBy('tanggal_lahir', $dir);
+        } else {
+            $column = in_array($this->sortBy, ['nama', 'nik']) ? $this->sortBy : 'nama';
+            $query->orderBy($column, $this->sortDir);
+        }
+
         // Use simplePaginate to avoid expensive COUNT(*) on large tables.
         // simplePaginate performs a LIMIT+1 fetch and does not calculate total rows.
         // Select only the columns needed for the table to reduce IO
-        $penduduks = $query->select(['id','nik','nama','jenis_kelamin','alamat'])
-            ->orderBy('nama')
+        $penduduks = $query->select(['id','nik','nama','jenis_kelamin','alamat','tanggal_lahir'])
             ->simplePaginate($this->perPage);
 
-        $queries = DB::getQueryLog();
-        $duration = microtime(true) - $start;
-        Log::info("[PendudukCrud] render: duration={duration}s, queries={count}", [
-            'duration' => round($duration, 3),
-            'count' => count($queries),
-        ]);
-
-        // log sample queries for inspection
-        if (count($queries) > 0) {
-            $sample = array_slice($queries, 0, 10);
-            Log::debug('[PendudukCrud] sample queries', $sample);
-        }
+        // normal render path — no verbose logging
 
         return view('livewire.admin.penduduk-crud', compact('penduduks'));
     }

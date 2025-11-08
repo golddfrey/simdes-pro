@@ -3,8 +3,7 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
+// Debugging DB listener removed — logging was temporary during diagnosis
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -21,18 +20,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        // Temporary DB query listener for performance diagnosis.
-        // This logs every executed query with its duration. Remove after debugging.
-        DB::listen(function ($query) {
-            try {
-                Log::debug('[DB] sql', [
-                    'sql' => $query->sql,
-                    'bindings' => $query->bindings,
-                    'time' => $query->time,
-                ]);
-            } catch (\Throwable $e) {
-                // avoid letting logging cause errors
-            }
-        });
+        // No-op: diagnostic DB listener previously used for profiling has been removed.
     }
 }
