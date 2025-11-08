@@ -15,6 +15,12 @@ use App\Http\Controllers\KepalaAuthController;
 // });
 Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
+// Provide a generic named 'login' route so Laravel's auth middleware can redirect unauthenticated
+// users to a valid route. The admin login form is used here.
+use App\Http\Controllers\Admin\AuthController as AdminAuthController;
+Route::get('login', [AdminAuthController::class, 'showLogin'])->name('login');
+Route::post('login', [AdminAuthController::class, 'login'])->name('login.post');
+
 // Logout route: use POST and invalidate session, then redirect to home
 Route::post('/logout', function (Request $request) {
 	Auth::logout();

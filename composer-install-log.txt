@@ -1,0 +1,51 @@
+Running 2.8.12 (2025-09-19 13:41:59) with PHP 8.4.14 on Windows NT / 10.0
+Reading ./composer.json (C:\projects\simdes-pro\composer.json)
+Loading config file ./composer.json (C:\projects\simdes-pro\composer.json)
+Checked CA file /etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem does not exist or it is not a file.
+Checked directory /etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem does not exist or it is not a directory.
+Checked CA file /etc/pki/tls/certs/ca-bundle.crt does not exist or it is not a file.
+Checked directory /etc/pki/tls/certs/ca-bundle.crt does not exist or it is not a directory.
+Checked CA file /etc/ssl/certs/ca-certificates.crt does not exist or it is not a file.
+Checked directory /etc/ssl/certs/ca-certificates.crt does not exist or it is not a directory.
+Checked CA file /etc/ssl/ca-bundle.pem does not exist or it is not a file.
+Checked directory /etc/ssl/ca-bundle.pem does not exist or it is not a directory.
+Checked CA file /usr/ssl/certs/ca-bundle.crt does not exist or it is not a file.
+Checked directory /usr/ssl/certs/ca-bundle.crt does not exist or it is not a directory.
+Checked CA file /opt/local/share/curl/curl-ca-bundle.crt does not exist or it is not a file.
+Checked directory /opt/local/share/curl/curl-ca-bundle.crt does not exist or it is not a directory.
+Checked CA file /usr/local/share/curl/curl-ca-bundle.crt does not exist or it is not a file.
+Checked directory /usr/local/share/curl/curl-ca-bundle.crt does not exist or it is not a directory.
+Checked CA file /usr/share/ssl/certs/ca-bundle.crt does not exist or it is not a file.
+Checked directory /usr/share/ssl/certs/ca-bundle.crt does not exist or it is not a directory.
+Checked CA file /etc/ssl/cert.pem does not exist or it is not a file.
+Checked directory /etc/ssl/cert.pem does not exist or it is not a directory.
+Checked CA file /usr/local/etc/openssl/cert.pem does not exist or it is not a file.
+Checked directory /usr/local/etc/openssl/cert.pem does not exist or it is not a directory.
+Checked CA file /usr/local/etc/openssl@1.1/cert.pem does not exist or it is not a file.
+Checked directory /usr/local/etc/openssl@1.1/cert.pem does not exist or it is not a directory.
+Checked CA file /opt/homebrew/etc/openssl@3/cert.pem does not exist or it is not a file.
+Checked directory /opt/homebrew/etc/openssl@3/cert.pem does not exist or it is not a directory.
+Checked CA file /opt/homebrew/etc/openssl@1.1/cert.pem does not exist or it is not a file.
+Checked directory /opt/homebrew/etc/openssl@1.1/cert.pem does not exist or it is not a directory.
+Checked CA file /etc/pki/tls/certs does not exist or it is not a file.
+Checked directory /etc/pki/tls/certs does not exist or it is not a directory.
+Checked CA file /etc/ssl/certs does not exist or it is not a file.
+Checked directory /etc/ssl/certs does not exist or it is not a directory.
+Checked CA file C:\Users\javik\AppData\Local\Temp\ope5FE5.tmp: valid
+Executing command (C:\projects\simdes-pro): git branch -a --no-color --no-abbrev -v
+Failed to initialize global composer: Composer could not find the config file: C:/Users/javik/AppData/Roaming/Composer/composer.json
+
+Reading C:\projects\simdes-pro/vendor/composer/installed.json (C:\projects\simdes-pro\vendor\composer\installed.json)
+Loading plugin Pest\Plugin\Manager (from pestphp/pest-plugin)
+Reading ./composer.lock (C:\projects\simdes-pro\composer.lock)
+Installing dependencies from lock file (including require-dev)
+Verifying lock file contents can be installed on current platform.
+Reading ./composer.lock (C:\projects\simdes-pro\composer.lock)
+Built pool.
+Generating rules
+Resolving dependencies through SAT
+Looking at all rules.
+
+Dependency resolution completed in 0.001 seconds
+Nothing to install, update or remove
+Generating optimized autoload files
