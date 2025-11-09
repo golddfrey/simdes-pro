@@ -242,7 +242,7 @@
 
   <!-- Save confirmation modal -->
   @if($confirmingSave)
-    <div class="fixed inset-0 z-60 flex items-center justify-center px-4 py-6">
+    <div class="fixed inset-0 flex items-center justify-center px-4 py-6" style="z-index:9999;">
       <div class="absolute inset-0 bg-black bg-opacity-25" wire:click="$set('confirmingSave', false)"></div>
       <div class="relative bg-white rounded-lg shadow-lg w-full max-w-md p-6">
         <h4 class="text-lg font-semibold mb-2">Konfirmasi Simpan</h4>
@@ -257,7 +257,7 @@
 
   <!-- Delete confirmation modal -->
   @if($confirmingDeleteId)
-    <div class="fixed inset-0 z-60 flex items-center justify-center px-4 py-6">
+    <div class="fixed inset-0 flex items-center justify-center px-4 py-6" style="z-index:9999;">
       <div class="absolute inset-0 bg-black bg-opacity-25" wire:click="$set('confirmingDeleteId', null)"></div>
       <div class="relative bg-white rounded-lg shadow-lg w-full max-w-md p-6">
         <h4 class="text-lg font-semibold mb-2">Konfirmasi Hapus</h4>
