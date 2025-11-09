@@ -1,6 +1,25 @@
 <div class="w-full mx-auto px-6 py-8">
   <div class="flex items-center justify-between mb-4">
-    <h2 class="text-2xl font-semibold">Data Penduduk</h2>
+    <div class="flex items-center space-x-3">
+      <h2 class="text-2xl font-semibold">Data Penduduk</h2>
+      @if(isset($paginationMode))
+        @php
+          $badgeText = 'Mode: Unknown';
+          $badgeClasses = 'bg-gray-200 text-gray-700';
+          if ($paginationMode === 'keyset') {
+              $badgeText = 'Keyset (cursor)';
+              $badgeClasses = 'bg-green-100 text-green-800';
+          } elseif ($paginationMode === 'numbered') {
+              $badgeText = 'Paginated (numbered)';
+              $badgeClasses = 'bg-blue-100 text-blue-800';
+          } elseif ($paginationMode === 'simple') {
+              $badgeText = 'Simple (next/prev)';
+              $badgeClasses = 'bg-yellow-100 text-yellow-800';
+          }
+        @endphp
+        <span class="px-2 py-1 rounded text-sm font-medium {{ $badgeClasses }}">{{ $badgeText }}</span>
+      @endif
+    </div>
 
     <!-- Controls: search, per-page selector, add button -->
   <div class="flex items-center space-x-3">
@@ -100,16 +119,28 @@
       <tbody class="bg-white divide-y divide-gray-100">
         @foreach($penduduks as $p)
           <tr>
-            <td class="px-4 py-3 text-sm text-gray-700">{{ ($penduduks->currentPage()-1) * $penduduks->perPage() + $loop->iteration }}</td>
+            @php
+              // Support multiple paginator types:
+              // - LengthAwarePaginator / Paginator provide currentPage()/perPage()
+              // - CursorPaginator does not provide currentPage(), so fall back to
+              //   a simple per-page relative index (1..N) to avoid errors.
+              if (method_exists($penduduks, 'currentPage') && method_exists($penduduks, 'perPage')) {
+                  $rowNumber = ($penduduks->currentPage() - 1) * $penduduks->perPage() + $loop->iteration;
+              } else {
+                  $rowNumber = $loop->iteration;
+              }
+            @endphp
+            <td class="px-4 py-3 text-sm text-gray-700">{{ $rowNumber }}</td>
             <td class="px-4 py-3 text-sm text-gray-700">{{ $p->nik }}</td>
             <td class="px-4 py-3 text-sm text-gray-700">{{ $p->nama }}</td>
             <td class="px-4 py-3 text-sm text-gray-700">{{ optional($p->tanggal_lahir) ? \Illuminate\Support\Carbon::parse($p->tanggal_lahir)->format('Y-m-d') : '-' }}</td>
             <td class="px-4 py-3 text-sm text-gray-700">{{ $p->tanggal_lahir ? \Illuminate\Support\Carbon::parse($p->tanggal_lahir)->age : '-' }}</td>
             <td class="px-4 py-3 text-sm text-gray-600">{{ \Illuminate\Support\Str::limit($p->alamat, 80) }}</td>
             <td class="px-4 py-3 text-sm text-right">
-              <button wire:click="showDetail({{ $p->id }})" class="px-3 py-1 border rounded text-sm mr-2">Detail</button>
-              <button wire:click="edit({{ $p->id }})" class="px-3 py-1 border rounded text-sm">Edit</button>
-              <button wire:click="delete({{ $p->id }})" class="px-3 py-1 border rounded text-sm text-red-600">Hapus</button>
+        <!-- Call component methods directly. Note: component method for detail is renamed to openDetail to avoid property/method name collision. -->
+        <button wire:click="openDetail({{ $p->id }})" class="px-3 py-1 border rounded text-sm mr-2">Detail</button>
+        <button wire:click="edit({{ $p->id }})" class="px-3 py-1 border rounded text-sm">Edit</button>
+        <button wire:click="confirmDelete({{ $p->id }})" class="px-3 py-1 border rounded text-sm text-red-600">Hapus</button>
             </td>
           </tr>
         @endforeach
@@ -219,6 +250,21 @@
         <div class="mt-4 flex justify-end space-x-2">
           <button wire:click="$set('confirmingSave', false)" class="px-3 py-1 border rounded">Batal</button>
           <button wire:click="confirmAndSave" class="px-3 py-1 bg-indigo-600 text-white rounded">Ya, Simpan</button>
+        </div>
+      </div>
+    </div>
+  @endif
+
+  <!-- Delete confirmation modal -->
+  @if($confirmingDeleteId)
+    <div class="fixed inset-0 z-60 flex items-center justify-center px-4 py-6">
+      <div class="absolute inset-0 bg-black bg-opacity-25" wire:click="$set('confirmingDeleteId', null)"></div>
+      <div class="relative bg-white rounded-lg shadow-lg w-full max-w-md p-6">
+        <h4 class="text-lg font-semibold mb-2">Konfirmasi Hapus</h4>
+        <p class="text-sm text-gray-700">Anda yakin ingin menghapus data penduduk ini? Tindakan ini tidak dapat dibatalkan.</p>
+        <div class="mt-4 flex justify-end space-x-2">
+          <button wire:click="$set('confirmingDeleteId', null)" class="px-3 py-1 border rounded">Batal</button>
+          <button wire:click="delete({{ $confirmingDeleteId }})" class="px-3 py-1 bg-red-600 text-white rounded">Hapus</button>
         </div>
       </div>
     </div>

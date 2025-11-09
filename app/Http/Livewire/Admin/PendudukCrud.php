@@ -6,6 +6,7 @@ use Livewire\Component;
 use Livewire\WithPagination;
 use App\Models\Penduduk;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Cache;
 
 class PendudukCrud extends Component
 {
@@ -54,6 +55,8 @@ class PendudukCrud extends Component
     public $confirmingSave = false;
     // immediate saved message for UI
     public $savedMessage = null;
+    // id pending deletion confirmation (null when not confirming)
+    public $confirmingDeleteId = null;
 
     protected $rules = [
         'form.nik' => 'required|string|size:16|unique:penduduks,nik',
@@ -198,6 +201,14 @@ class PendudukCrud extends Component
         $this->confirmingSave = true;
     }
 
+    /**
+     * Show delete confirmation modal by setting the pending id.
+     */
+    public function confirmDelete($id)
+    {
+        $this->confirmingDeleteId = $id;
+    }
+
     public function confirmAndSave()
     {
         // call existing save flow
@@ -205,7 +216,8 @@ class PendudukCrud extends Component
         $this->confirmingSave = false;
     }
 
-    public function showDetail($id)
+    // renamed from showDetail to openDetail to avoid name collision with public $showDetail property
+    public function openDetail($id)
     {
         $p = Penduduk::find($id);
         if ($p) {
@@ -221,8 +233,18 @@ class PendudukCrud extends Component
             $p->delete();
             session()->flash('success', 'Penduduk dihapus.');
         }
+        // Clear pending delete id and reset pagination so UI updates
+        $this->confirmingDeleteId = null;
         $this->resetPage();
     }
+
+    // Expose listeners so JS-emitted events are handled reliably
+    // Note: method names avoid colliding with property names (e.g. $showDetail)
+    protected $listeners = [
+        'showDetail' => 'openDetail',
+        'editPenduduk' => 'edit',
+        'deletePenduduk' => 'delete',
+    ];
 
     protected function resetForm()
     {
@@ -290,19 +312,48 @@ class PendudukCrud extends Component
 
         // If the user is actively searching or filtering by age, use simplePaginate()
         // to avoid a heavy COUNT(*) (faster for interactive searches). When no
-        // search/filters are active, return full paginate() so the UI can show
-        // numbered pages.
+        // search/filters are active, use cursorPaginate() (keyset pagination)
+        // which is much more efficient than OFFSET for deep paging.
         $isFiltering = ($q && trim($q) !== '') || $hasMin || $hasMax;
-        if ($isFiltering) {
-            $penduduks = $query->select($selectCols)
-                ->simplePaginate($perPage)->withQueryString();
-        } else {
-            $penduduks = $query->select($selectCols)
-                ->paginate($perPage)->withQueryString();
-        }
+
+        // Build a short-lived cache key so repeated identical requests within
+        // a couple seconds reuse the results and don't hit the DB again.
+        $cacheKeyParts = [
+            'q' => $q,
+            'ageMin' => $this->ageMin,
+            'ageMax' => $this->ageMax,
+            'sortBy' => $this->sortBy,
+            'sortDir' => $this->sortDir,
+            'perPage' => $perPage,
+            'page' => request()->get('page'),
+            'cursor' => request()->get('cursor'),
+        ];
+        $cacheKey = 'penduduks:'.md5(json_encode($cacheKeyParts));
+        $cacheTtl = 2; // seconds - very short cache for interactive typing
+
+        $penduduks = Cache::remember($cacheKey, $cacheTtl, function () use ($query, $isFiltering, $perPage, $selectCols) {
+            if ($isFiltering) {
+                return $query->select($selectCols)
+                    ->simplePaginate($perPage)->withQueryString();
+            }
+            // Non-filtered listing: use cursor (keyset) pagination for speed
+            return $query->select($selectCols)
+                ->cursorPaginate($perPage)->withQueryString();
+        });
 
         // normal render path — no verbose logging
 
-        return view('livewire.admin.penduduk-crud', compact('penduduks'));
+        // Determine pagination mode string for UI badge
+        $paginationMode = 'unknown';
+        // CursorPaginator has its own class
+        if ($penduduks instanceof \Illuminate\Pagination\CursorPaginator) {
+            $paginationMode = 'keyset'; // Keyset (cursor)
+        } elseif (method_exists($penduduks, 'currentPage') && method_exists($penduduks, 'perPage')) {
+            $paginationMode = 'numbered'; // standard numbered paginate
+        } else {
+            $paginationMode = 'simple'; // simplePaginate (next/prev)
+        }
+
+        return view('livewire.admin.penduduk-crud', compact('penduduks', 'paginationMode'));
     }
 }

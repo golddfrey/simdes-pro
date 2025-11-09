@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>SimDes</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  @livewireStyles
 </head>
 <body class="antialiased bg-gray-50 text-gray-800">
   <header class="bg-white shadow">
@@ -40,5 +41,63 @@
   <main class="py-8">
     @yield('content')
   </main>
+  @livewireScripts
+  <script>
+    // Lightweight helper to emit events to Livewire even if the global
+    // Livewire object isn't ready or is exposed under a different name.
+    (function(){
+      window._lwEmitQueue = window._lwEmitQueue || [];
+      window.LivewireEmit = function(eventName){
+        var args = Array.prototype.slice.call(arguments, 1);
+        // prefer window.Livewire.emit, then window.livewire.emit
+        if (window.Livewire && typeof window.Livewire.emit === 'function') {
+          return window.Livewire.emit.apply(window.Livewire, [eventName].concat(args));
+        }
+        if (window.livewire && typeof window.livewire.emit === 'function') {
+          return window.livewire.emit.apply(window.livewire, [eventName].concat(args));
+        }
+        // queue until Livewire loads
+        window._lwEmitQueue.push({ eventName: eventName, args: args });
+      };
+
+  // try flushing the queue every 200ms for a short period
+      var attempts = 0;
+      var flushInterval = setInterval(function(){
+        attempts++;
+        var lw = window.Livewire || window.livewire;
+        if (lw && typeof lw.emit === 'function') {
+          while(window._lwEmitQueue.length){
+            var it = window._lwEmitQueue.shift();
+            try { lw.emit.apply(lw, [it.eventName].concat(it.args)); } catch(e){ /* swallow */ }
+          }
+          clearInterval(flushInterval);
+          return;
+        }
+        if (attempts > 25) { // ~5 seconds
+          clearInterval(flushInterval);
+        }
+      }, 200);
+      // Event delegation for buttons with data-livewire-action
+      document.addEventListener('click', function(e){
+        var btn = e.target.closest && e.target.closest('[data-livewire-action]');
+        if (!btn) return;
+        var action = btn.getAttribute('data-livewire-action');
+        var id = btn.getAttribute('data-livewire-id');
+        var lw = window.Livewire || window.livewire;
+        if (lw && typeof lw.emit === 'function') {
+          try { lw.emit(action, id); } catch(err) { console.error(err); }
+          return;
+        }
+        // fallback to queued emitter
+        if (typeof window.LivewireEmit === 'function') {
+          window.LivewireEmit(action, id);
+        } else {
+          // last resort: push to queue
+          window._lwEmitQueue = window._lwEmitQueue || [];
+          window._lwEmitQueue.push({ eventName: action, args: [id] });
+        }
+      });
+    })();
+  </script>
 </body>
 </html>

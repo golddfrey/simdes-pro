@@ -157,5 +157,6 @@
       console.log('Livewire debug script error', err);
     }
   </script>
+    
 </body>
 </html>
