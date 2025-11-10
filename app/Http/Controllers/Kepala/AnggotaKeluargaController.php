@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use App\Models\AnggotaKeluarga;
 use App\Models\AnggotaKeluargaChangeRequest;
 use App\Models\KepalaKeluarga;
+use App\Models\User;
+use App\Notifications\NewAnggotaChangeRequest;
 
 class AnggotaKeluargaController extends Controller
 {
@@ -97,6 +99,17 @@ class AnggotaKeluargaController extends Controller
             'status' => 'pending',
         ]);
 
+        // Notify all admin users via database notifications
+        try {
+            $admins = User::where('is_admin', true)->get();
+            if ($admins->isNotEmpty()) {
+                \Illuminate\Support\Facades\Notification::send($admins, new NewAnggotaChangeRequest($cr));
+            }
+        } catch (\Throwable $e) {
+            // swallow notification errors but log for visibility
+            \Log::error('Failed to send admin notification for change request: '.$e->getMessage());
+        }
+
         return redirect()->route('kepala.anggota.index')->with('status', 'Pengajuan penambahan anggota keluarga dibuat, menunggu persetujuan.');
     }
 
@@ -133,13 +146,23 @@ class AnggotaKeluargaController extends Controller
         ]);
 
         // create update change request
-        AnggotaKeluargaChangeRequest::create([
+            $cr = AnggotaKeluargaChangeRequest::create([
             'kepala_keluarga_id' => $kepalaId,
             'anggota_keluarga_id' => $anggota->id,
             'action' => 'update',
             'payload' => $data,
             'status' => 'pending',
         ]);
+
+            // notify admins
+            try {
+                $admins = User::where('is_admin', true)->get();
+                if ($admins->isNotEmpty()) {
+                    \Illuminate\Support\Facades\Notification::send($admins, new NewAnggotaChangeRequest($cr));
+                }
+            } catch (\Throwable $e) {
+                \Illuminate\Support\Facades\Log::error('Failed to send admin notification for change request (update): '.$e->getMessage());
+            }
 
         return redirect()->route('kepala.dashboard')->with('status', 'Pengajuan perubahan data anggota keluarga dibuat, menunggu persetujuan.');
     }
@@ -155,7 +178,7 @@ class AnggotaKeluargaController extends Controller
             'keterangan' => 'nullable|string',
         ]);
 
-        AnggotaKeluargaChangeRequest::create([
+            $cr = AnggotaKeluargaChangeRequest::create([
             'kepala_keluarga_id' => $kepalaId,
             'anggota_keluarga_id' => $anggota->id,
             'action' => 'death',
@@ -163,6 +186,16 @@ class AnggotaKeluargaController extends Controller
             'status' => 'pending',
         ]);
 
-        return redirect()->route('kepala.dashboard')->with('status', 'Laporan kematian dibuat, menunggu verifikasi admin.');
+            // notify admins about death report
+            try {
+                $admins = User::where('is_admin', true)->get();
+                if ($admins->isNotEmpty()) {
+                    \Illuminate\Support\Facades\Notification::send($admins, new NewAnggotaChangeRequest($cr));
+                }
+            } catch (\Throwable $e) {
+                \Illuminate\Support\Facades\Log::error('Failed to send admin notification for death report: '.$e->getMessage());
+            }
+
+            return redirect()->route('kepala.dashboard')->with('status', 'Laporan kematian dibuat, menunggu verifikasi admin.');
     }
 }

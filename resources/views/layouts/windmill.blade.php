@@ -100,10 +100,68 @@
         </div>
 
         <div class="flex items-center space-x-4">
-          {{-- Notifikasi (placeholder) --}}
-            <button title="Notifikasi" class="p-2 rounded hover:bg-gray-100">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 10-12 0v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" /></svg>
+          {{-- Notifikasi: tampilkan unread untuk Admin (Auth) atau Kepala (session) --}}
+          @php
+            $unread = 0;
+            $notifs = collect();
+            $routeName = null;
+            if (\Illuminate\Support\Facades\Auth::check()) {
+                $user = \Illuminate\Support\Facades\Auth::user();
+                $unread = $user->unreadNotifications()->count();
+                $notifs = $user->unreadNotifications()->take(10)->get();
+                $routeName = 'admin.notifications.go';
+            } elseif (session()->has('kepala_keluarga_id')) {
+                $kepala = \App\Models\KepalaKeluarga::find(session('kepala_keluarga_id'));
+                if ($kepala) {
+                    $unread = $kepala->unreadNotifications()->count();
+                    $notifs = $kepala->unreadNotifications()->take(10)->get();
+                }
+                $routeName = 'kepala.notifications.go';
+            }
+          @endphp
+
+          <div x-data="{notifOpen:false}" class="relative">
+            <button @click="notifOpen = !notifOpen" title="Notifikasi" class="p-2 rounded hover:bg-gray-100 relative">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 10-12 0v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" /></svg>
+              @if($unread > 0)
+                <span class="absolute -top-1 -right-1 bg-red-600 text-white rounded-full text-xs w-5 h-5 flex items-center justify-center">{{ $unread }}</span>
+              @endif
             </button>
+
+            <div x-show="notifOpen" x-cloak @click.away="notifOpen = false" class="origin-top-right absolute right-0 mt-2 w-96 bg-white border rounded shadow-lg z-50">
+              <div class="p-3 border-b flex items-center justify-between">
+                <strong>Notifikasi</strong>
+                <a href="#" @click.prevent="notifOpen = false" class="text-xs text-gray-500">Tutup</a>
+              </div>
+              <div class="max-h-72 overflow-auto">
+                @if($notifs->isEmpty())
+                  <div class="p-3 text-sm text-gray-600">Tidak ada notifikasi baru.</div>
+                @else
+                  @foreach($notifs as $n)
+                    @php $data = (array) $n->data; @endphp
+                    <a href="{{ $routeName ? route($routeName, $n->id) : '#' }}" class="block px-3 py-2 hover:bg-gray-50 border-b">
+                      <div class="flex items-start">
+                        <div class="flex-1">
+                          <div class="text-sm font-medium text-gray-800">{{ $data['title'] ?? 'Notifikasi' }}</div>
+                          <div class="text-xs text-gray-600">{{ $data['body'] ?? '' }}</div>
+                        </div>
+                        <div class="ml-2 text-xs text-gray-400">{{ $n->created_at->diffForHumans() }}</div>
+                      </div>
+                    </a>
+                  @endforeach
+                @endif
+              </div>
+              <div class="p-2 text-center border-t">
+                @if(\Illuminate\Support\Facades\Auth::check())
+                  <a href="{{ route('admin.notifications.index') }}" class="text-xs text-indigo-600">Lihat semua</a>
+                @elseif(session()->has('kepala_keluarga_id'))
+                  <a href="{{ route('kepala.notifications.index') }}" class="text-xs text-indigo-600">Lihat semua</a>
+                @else
+                  <a href="{{ route('home') }}" class="text-xs text-indigo-600">Lihat semua</a>
+                @endif
+              </div>
+            </div>
+          </div>
 
             {{-- Kepala logout or login link --}}
             @if(session()->has('kepala_keluarga_id'))

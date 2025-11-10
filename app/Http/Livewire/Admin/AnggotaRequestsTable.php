@@ -6,8 +6,10 @@ use Livewire\Component;
 use Livewire\WithPagination;
 use App\Models\AnggotaKeluargaChangeRequest;
 use App\Models\AnggotaKeluarga;
+use App\Models\KepalaKeluarga;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Arr;
+use App\Notifications\AnggotaRequestProcessed;
 
 class AnggotaRequestsTable extends Component
 {
@@ -79,6 +81,16 @@ class AnggotaRequestsTable extends Component
         }
 
         session()->flash('success', 'Permintaan berhasil disetujui.');
+        // notify kepala keluarga about result
+        try {
+            $kepala = KepalaKeluarga::find($req->kepala_keluarga_id);
+            if ($kepala) {
+                $kepala->notify(new AnggotaRequestProcessed($req, 'approved'));
+            }
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error('Failed to notify kepala after approve: '.$e->getMessage());
+        }
+
         // Livewire v3: emit() was replaced by dispatch()
         $this->dispatch('refreshRequests');
         $this->closeDetail();
@@ -95,6 +107,16 @@ class AnggotaRequestsTable extends Component
         $req->update(['status' => 'rejected', 'reason' => $this->rejectReason ?: null, 'reviewed_by' => Auth::id(), 'reviewed_at' => now()]);
 
         session()->flash('success', 'Permintaan ditolak.');
+        // notify kepala keluarga about rejection
+        try {
+            $kepala = KepalaKeluarga::find($req->kepala_keluarga_id);
+            if ($kepala) {
+                $kepala->notify(new AnggotaRequestProcessed($req, 'rejected'));
+            }
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error('Failed to notify kepala after reject: '.$e->getMessage());
+        }
+
         // Livewire v3: emit() was replaced by dispatch()
         $this->dispatch('refreshRequests');
         $this->closeDetail();
