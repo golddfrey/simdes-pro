@@ -32,7 +32,8 @@ class AnggotaRequestsTable extends Component
         return view('livewire.admin.anggota-requests-table', compact('requests'));
     }
 
-    public function showDetail($id)
+    // rename method to avoid collision with public $showDetail property
+    public function openDetail($id)
     {
         $this->selectedId = $id;
         $this->showDetail = true;
@@ -78,7 +79,8 @@ class AnggotaRequestsTable extends Component
         }
 
         session()->flash('success', 'Permintaan berhasil disetujui.');
-        $this->emit('refreshRequests');
+        // Livewire v3: emit() was replaced by dispatch()
+        $this->dispatch('refreshRequests');
         $this->closeDetail();
     }
 
@@ -93,7 +95,8 @@ class AnggotaRequestsTable extends Component
         $req->update(['status' => 'rejected', 'reason' => $this->rejectReason ?: null, 'reviewed_by' => Auth::id(), 'reviewed_at' => now()]);
 
         session()->flash('success', 'Permintaan ditolak.');
-        $this->emit('refreshRequests');
+        // Livewire v3: emit() was replaced by dispatch()
+        $this->dispatch('refreshRequests');
         $this->closeDetail();
     }
 }

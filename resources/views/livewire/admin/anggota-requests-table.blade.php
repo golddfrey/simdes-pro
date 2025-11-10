@@ -26,7 +26,7 @@
             <td class="px-4 py-3 text-sm text-gray-600">@php $p = is_array($r->payload) ? $r->payload : json_decode($r->payload, true); echo e(collect($p ?? [])->take(3)->map(function($v,$k){ return $k.': '.$v; })->join(', ')); @endphp</td>
             <td class="px-4 py-3 text-sm text-gray-500">{{ $r->created_at->format('Y-m-d H:i') }}</td>
             <td class="px-4 py-3 text-sm text-right">
-              <button wire:click="showDetail({{ $r->id }})" class="inline-flex items-center px-3 py-1 bg-white border border-gray-200 text-gray-700 rounded-md shadow-sm hover:bg-gray-50 text-sm">Lihat</button>
+              <button wire:click="openDetail({{ $r->id }})" class="inline-flex items-center px-3 py-1 bg-white border border-gray-200 text-gray-700 rounded-md shadow-sm hover:bg-gray-50 text-sm">Lihat</button>
             </td>
           </tr>
         @endforeach

@@ -3,8 +3,12 @@
 @section('title','Kritik & Saran')
 
 @section('content')
-<div class="max-w-2xl mx-auto px-6 py-8">
+<div class="max-w-6xl mx-auto px-6 py-8">
   <h2 class="text-xl font-semibold mb-4">Kritik dan Saran</h2>
+  <div class="mb-6 p-4 bg-blue-50 border border-blue-100 rounded text-sm text-gray-700">
+    <p>Gunakan formulir ini untuk menyampaikan masukan yang konstruktif tentang layanan, proses, atau fitur yang perlu diperbaiki. Jelaskan masalah yang Anda alami, sertakan contoh atau langkah untuk mereproduksi bila perlu, dan usulkan solusi apabila memungkinkan. Semua masukan akan ditinjau oleh tim kami untuk perbaikan berkelanjutan.</p>
+    <p class="mt-2 text-xs text-gray-500">Opsional: tambahkan kontak jika Anda menginginkan tanggapan balik.</p>
+  </div>
 
   <form method="POST" action="{{ route('kepala.feedback.store') }}">
     @csrf

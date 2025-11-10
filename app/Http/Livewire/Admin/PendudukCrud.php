@@ -7,6 +7,8 @@ use Livewire\WithPagination;
 use App\Models\Penduduk;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class PendudukCrud extends Component
 {
@@ -80,6 +82,21 @@ class PendudukCrud extends Component
     public function updatedSearch()
     {
         $this->resetPage();
+    }
+
+    // Mount: register a DB listener for debugging (temporary)
+    public function mount()
+    {
+        // Only register if not already registered in this request
+        DB::listen(function ($query) {
+            // Log raw SQL + bindings + time in ms
+            try {
+                Log::debug('[LW-DB] SQL: '.$query->sql.' | bindings: '.json_encode($query->bindings).' | time: '.(isset($query->time) ? $query->time : 'n/a'));
+            } catch (\Throwable $e) {
+                // swallow logging errors to avoid interfering with request
+                Log::debug('[LW-DB] logging failed: '.$e->getMessage());
+            }
+        });
     }
 
     // When perPage changes, go back to page 1
@@ -164,6 +181,7 @@ class PendudukCrud extends Component
 
     public function save()
     {
+        $start = microtime(true);
         // When editing, ensure the unique rule for NIK ignores the current record id
         if ($this->editingId) {
             $this->rules['form.nik'] = 'required|string|size:16|unique:penduduks,nik,'.$this->editingId.',id';
@@ -194,6 +212,8 @@ class PendudukCrud extends Component
 
         $this->showForm = false;
         $this->resetPage();
+        $dur = round((microtime(true) - $start) * 1000, 2);
+        Log::debug('[LW-ACTION] save completed in '.$dur.' ms');
     }
 
     public function confirmSave()
@@ -228,14 +248,24 @@ class PendudukCrud extends Component
 
     public function delete($id)
     {
-        $p = Penduduk::find($id);
-        if ($p) {
-            $p->delete();
-            session()->flash('success', 'Penduduk dihapus.');
+        $start = microtime(true);
+        try {
+            $p = Penduduk::find($id);
+            if ($p) {
+                $p->delete();
+                session()->flash('success', 'Penduduk dihapus.');
+            }
+        } catch (\Throwable $e) {
+            // Log error for investigation and rethrow to surface to dev
+            Log::error('[LW-ACTION] delete failed: '.$e->getMessage(), ['exception' => $e]);
+            throw $e;
+        } finally {
+            // Clear pending delete id and reset pagination so UI updates
+            $this->confirmingDeleteId = null;
+            $this->resetPage();
+            $dur = round((microtime(true) - $start) * 1000, 2);
+            Log::debug('[LW-ACTION] delete completed in '.$dur.' ms');
         }
-        // Clear pending delete id and reset pagination so UI updates
-        $this->confirmingDeleteId = null;
-        $this->resetPage();
     }
 
     // Expose listeners so JS-emitted events are handled reliably

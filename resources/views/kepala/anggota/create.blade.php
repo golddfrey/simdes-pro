@@ -3,7 +3,7 @@
 @section('title','Tambah Anggota Keluarga')
 
 @section('content')
-    <div class="max-w-3xl mx-auto px-6 py-10">
+    <div class="max-w-6xl mx-auto px-6 py-10">
         <div class="text-center mb-6">
             <h1 class="text-2xl font-bold">Tambah Anggota Keluarga</h1>
             <p class="text-gray-600 mt-1">Isi data anggota keluarga dan ajukan untuk verifikasi admin.</p>
