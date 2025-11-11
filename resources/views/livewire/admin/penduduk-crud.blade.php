@@ -159,7 +159,10 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
           <div>
             <label class="block text-sm">NIK</label>
-            <input type="text" wire:model="form.nik" class="w-full border rounded px-3 py-2" @if($editingId) readonly @endif>
+            <div class="flex space-x-2">
+              <input type="text" wire:model="form.nik" class="flex-1 border rounded px-3 py-2" @if($editingId) readonly @endif>
+              <button type="button" wire:click.prevent="recommendNik()" class="px-3 py-2 bg-gray-100 rounded text-sm" title="Rekomendasi NIK">Rekomendasi</button>
+            </div>
             @error('form.nik') <div class="text-red-600 text-sm">{{ $message }}</div> @enderror
           </div>
           <div>

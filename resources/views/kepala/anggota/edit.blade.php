@@ -27,7 +27,10 @@
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700">NIK</label>
-                    <input name="nik" value="{{ old('nik', $anggota->nik) }}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" />
+                    <div class="flex space-x-2">
+                        <input id="nik-input" name="nik" value="{{ old('nik', $anggota->nik) }}" class="flex-1 mt-1 block w-full rounded-md border-gray-300 shadow-sm" />
+                        <button type="button" id="btn-recommend-nik" class="px-3 py-2 bg-gray-100 rounded text-sm">Rekomendasi</button>
+                    </div>
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700">Tempat Lahir</label>
@@ -211,6 +214,24 @@ document.addEventListener('DOMContentLoaded', function () {
         const kode = opt ? opt.getAttribute('data-kodepos') : '';
         kodePosInput.value = kode || '';
     });
+
+    // NIK input sanitization and recommendation button
+    const nikInputHtml = document.getElementById('nik-input');
+    if (nikInputHtml) {
+        nikInputHtml.setAttribute('maxlength', '16');
+        nikInputHtml.addEventListener('input', function () { this.value = this.value.replace(/[^0-9]/g, '').slice(0,16); });
+    }
+    const btnRec = document.getElementById('btn-recommend-nik');
+    if (btnRec && nikInputHtml) {
+        btnRec.addEventListener('click', function () {
+            btnRec.disabled = true; const orig = btnRec.textContent; btnRec.textContent = 'Mencari...';
+            fetch('/kepala/nik/recommendation')
+                .then(r => r.json())
+                .then(data => { if (data && data.nik) nikInputHtml.value = data.nik; else alert('Gagal mendapatkan rekomendasi NIK.'); })
+                .catch(() => alert('Gagal menghubungi server untuk rekomendasi NIK.'))
+                .finally(() => { btnRec.disabled = false; btnRec.textContent = orig; });
+        });
+    }
 });
 </script>
 @endsection

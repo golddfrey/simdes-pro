@@ -9,6 +9,7 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 
 class PendudukCrud extends Component
 {
@@ -154,6 +155,51 @@ class PendudukCrud extends Component
         $this->resetForm();
         $this->showForm = true;
         $this->editingId = null;
+    }
+
+    /**
+     * Generate a light-weight recommended NIK that does not exist in penduduks.
+     * Strategy: generate small batch of random 16-digit candidates, query DB once
+     * to find collisions, and return first free candidate. Keep attempts limited
+     * to avoid heavy load.
+     */
+    public function recommendNik($count = 5)
+    {
+        $count = (int) $count;
+        $count = $count > 0 && $count <= 20 ? $count : 5;
+
+        $attempts = 0;
+        while ($attempts < 5) {
+            $candidates = [];
+            // Deterministic numeric generator to avoid letters
+            $candidates = array_map(function () {
+                return str_pad((string) random_int(0, 9999999999999999), 16, '0', STR_PAD_LEFT);
+            }, range(1, $count));
+
+            $exists = Penduduk::whereIn('nik', $candidates)->pluck('nik')->toArray();
+            $free = array_values(array_diff($candidates, $exists));
+            if (!empty($free)) {
+                $this->form['nik'] = $free[0];
+                // tidak memanggil event agar kompatibel dengan berbagai versi Livewire
+                // Livewire akan mengirimkan perubahan properti form.nik ke frontend otomatis
+                return $free[0];
+            }
+            $attempts++;
+        }
+
+        // fallback: generate single candidate until free (bounded)
+        for ($i = 0; $i < 50; $i++) {
+            $cand = str_pad((string) random_int(0, 9999999999999999), 16, '0', STR_PAD_LEFT);
+            $found = Penduduk::where('nik', $cand)->exists();
+            if (!$found) {
+                $this->form['nik'] = $cand;
+                // jangan memanggil event; cukup perbarui properti
+                return $cand;
+            }
+        }
+
+        // last resort: empty
+        return null;
     }
 
     public function edit($id)

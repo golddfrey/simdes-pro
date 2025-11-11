@@ -12,6 +12,7 @@ use App\Http\Controllers\Kepala\NotificationController as KepalaNotificationCont
 use App\Http\Controllers\Kepala\AnggotaKeluargaController as KepalaAnggotaController;
 use App\Http\Controllers\Kepala\SuratRequestController;
 use App\Http\Controllers\KepalaAuthController;
+use App\Http\Controllers\NikRecommendationController;
 
 // Route::get('/', function () {
 //     return view('welcome');
@@ -179,6 +180,8 @@ Route::post('kepala/logout', [KepalaAuthController::class, 'logout'])->name('kep
 
 // Kepala keluarga routes for anggota management and surat requests
 Route::prefix('kepala')->name('kepala.')->group(function () {
+	// lightweight NIK recommendation endpoint for AJAX forms (kepala/anggota page uses this)
+	Route::get('/nik/recommendation', [NikRecommendationController::class, 'recommend'])->name('nik.recommendation');
 	Route::get('anggota', [KepalaAnggotaController::class, 'index'])->name('anggota.index');
 	Route::get('anggota/create', [KepalaAnggotaController::class, 'create'])->name('anggota.create');
 	Route::post('anggota', [KepalaAnggotaController::class, 'store'])->name('anggota.store');

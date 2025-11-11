@@ -33,8 +33,11 @@
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700">NIK</label>
-                    <input name="nik" placeholder="Contoh: 320102xxxxxxxx" value="{{ old('nik') }}" class="mt-1 block w-full rounded-md border border-gray-200 bg-white py-2 px-3 text-sm text-gray-700 focus:outline-none focus:border-blue-400 focus:ring focus:ring-blue-200" />
-                    <p class="text-xs text-gray-500 mt-1">Masukkan 16 digit NIK sesuai KTP, tanpa spasi.</p>
+                    <div class="flex space-x-2">
+                        <input id="nik-input" name="nik" placeholder="Contoh: 320102xxxxxxxx" value="{{ old('nik') }}" class="flex-1 mt-1 block w-full rounded-md border border-gray-200 bg-white py-2 px-3 text-sm text-gray-700 focus:outline-none focus:border-blue-400 focus:ring focus:ring-blue-200" />
+                        <button type="button" id="btn-recommend-nik" class="px-3 py-2 bg-gray-100 rounded text-sm">Rekomendasi</button>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-1">Masukkan 16 digit NIK sesuai KTP, tanpa spasi. Gunakan tombol Rekomendasi untuk mengisi NIK yang belum ada di database.</p>
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700">Tempat Lahir</label>
@@ -222,6 +225,31 @@ document.addEventListener('DOMContentLoaded', function () {
         nikInputHtml.setAttribute('maxlength', '16');
         nikInputHtml.addEventListener('input', function () {
             this.value = this.value.replace(/[^0-9]/g, '').slice(0,16);
+        });
+    }
+
+    // AJAX NIK recommendation (lightweight)
+    const btnRecommend = document.getElementById('btn-recommend-nik');
+    const nikInput = document.getElementById('nik-input');
+    if (btnRecommend && nikInput) {
+        btnRecommend.addEventListener('click', function () {
+            btnRecommend.disabled = true;
+            const originalText = btnRecommend.textContent;
+            btnRecommend.textContent = 'Mencari...';
+            fetch('/kepala/nik/recommendation')
+                .then(r => r.json())
+                .then(data => {
+                    if (data && data.nik) {
+                        nikInput.value = data.nik;
+                    } else {
+                        alert('Gagal mendapatkan rekomendasi NIK. Coba lagi.');
+                    }
+                })
+                .catch(() => { alert('Gagal menghubungi server untuk rekomendasi NIK.'); })
+                .finally(() => {
+                    btnRecommend.disabled = false;
+                    btnRecommend.textContent = originalText;
+                });
         });
     }
 
