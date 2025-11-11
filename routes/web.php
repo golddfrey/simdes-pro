@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\KepalaKeluargaController;
 use App\Http\Controllers\Admin\AnggotaChangeRequestController;
 use App\Http\Controllers\Admin\AuthController;
 use App\Http\Controllers\Admin\NotificationController;
+use App\Http\Controllers\HomeController;
 use App\Http\Controllers\Kepala\NotificationController as KepalaNotificationController;
 use App\Http\Controllers\Kepala\AnggotaKeluargaController as KepalaAnggotaController;
 use App\Http\Controllers\Kepala\SuratRequestController;
@@ -15,31 +16,31 @@ use App\Http\Controllers\KepalaAuthController;
 // Route::get('/', function () {
 //     return view('welcome');
 // });
-Route::get('/', function (\Illuminate\Http\Request $request) {
-	// jika admin login (Laravel Auth), langsung ke admin dashboard
-	if (Auth::check()) {
-		return redirect()->route('admin.dashboard');
-	}
-	// jika kepala login (session), langsung ke kepala dashboard
-	if ($request->session()->has('kepala_keluarga_id')) {
-		return redirect()->route('kepala.dashboard');
-	}
-	return app()->make(App\Http\Controllers\HomeController::class)->index();
-})->name('home');
+// Halaman utama (landing). Jika sudah login, middleware akan mengarahkan ke dashboard masing-masing.
+Route::get('/', [HomeController::class, 'index'])
+	->name('home')
+	->middleware([
+		\App\Http\Middleware\RedirectIfAdminAuthenticated::class,
+		\App\Http\Middleware\RedirectIfKepalaAuthenticated::class,
+	]);
 
 // Provide a generic named 'login' route so Laravel's auth middleware can redirect unauthenticated
 // users to a valid route. The admin login form is used here. We redirect logged-in users to their dashboards.
 use App\Http\Controllers\Admin\AuthController as AdminAuthController;
-Route::get('login', function (\Illuminate\Http\Request $request) {
-	if (Auth::check()) return redirect()->route('admin.dashboard');
-	if ($request->session()->has('kepala_keluarga_id')) return redirect()->route('kepala.dashboard');
-	return app()->make(AdminAuthController::class)->showLogin();
-})->name('login');
-Route::post('login', function (\Illuminate\Http\Request $request) {
-	if (Auth::check()) return redirect()->route('admin.dashboard');
-	if ($request->session()->has('kepala_keluarga_id')) return redirect()->route('kepala.dashboard');
-	return app()->make(AdminAuthController::class)->login($request);
-})->name('login.post');
+// Generic admin login route (uses admin controller). Protect so logged-in users are redirected.
+Route::get('login', [AdminAuthController::class, 'showLogin'])
+	->name('login')
+	->middleware([
+		\App\Http\Middleware\RedirectIfAdminAuthenticated::class,
+		\App\Http\Middleware\RedirectIfKepalaAuthenticated::class,
+	]);
+
+Route::post('login', [AdminAuthController::class, 'login'])
+	->name('login.post')
+	->middleware([
+		\App\Http\Middleware\RedirectIfAdminAuthenticated::class,
+		\App\Http\Middleware\RedirectIfKepalaAuthenticated::class,
+	]);
 
 // Logout route: use POST and invalidate session, then redirect to home
 Route::post('/logout', function (Request $request) {
@@ -50,16 +51,19 @@ Route::post('/logout', function (Request $request) {
 })->name('logout');
 
 // Admin auth (login/logout)
-Route::get('admin/login', function (\Illuminate\Http\Request $request) {
-	if (Auth::check()) return redirect()->route('admin.dashboard');
-	if ($request->session()->has('kepala_keluarga_id')) return redirect()->route('kepala.dashboard');
-	return app()->make(AuthController::class)->showLogin();
-})->name('admin.login');
-Route::post('admin/login', function (\Illuminate\Http\Request $request) {
-	if (Auth::check()) return redirect()->route('admin.dashboard');
-	if ($request->session()->has('kepala_keluarga_id')) return redirect()->route('kepala.dashboard');
-	return app()->make(AuthController::class)->login($request);
-})->name('admin.login.post');
+Route::get('admin/login', [AuthController::class, 'showLogin'])
+	->name('admin.login')
+	->middleware([
+		\App\Http\Middleware\RedirectIfAdminAuthenticated::class,
+		\App\Http\Middleware\RedirectIfKepalaAuthenticated::class,
+	]);
+
+Route::post('admin/login', [AuthController::class, 'login'])
+	->name('admin.login.post')
+	->middleware([
+		\App\Http\Middleware\RedirectIfAdminAuthenticated::class,
+		\App\Http\Middleware\RedirectIfKepalaAuthenticated::class,
+	]);
 Route::post('admin/logout', [AuthController::class, 'logout'])->name('admin.logout');
 
 // Admin routes to manage kepala keluarga (requires admin auth + is_admin)
@@ -153,19 +157,20 @@ Route::middleware(['auth', \App\Http\Middleware\IsAdmin::class])->prefix('admin'
 });
 
 // Kepala keluarga auth routes (simple session-based auth by NIK)
-Route::get('kepala/login', function (\Illuminate\Http\Request $request) {
-	// jika kepala sudah login via session, redirect ke dashboard kepala
-	if ($request->session()->has('kepala_keluarga_id')) return redirect()->route('kepala.dashboard');
-	// jika admin sudah login, jangan izinkan akses ke login kepala
-	if (Auth::check()) return redirect()->route('admin.dashboard');
-	return app()->make(KepalaAuthController::class)->showLogin();
-})->name('kepala.login');
+// Kepala login (session-based). Protect so logged-in users are redirected.
+Route::get('kepala/login', [KepalaAuthController::class, 'showLogin'])
+	->name('kepala.login')
+	->middleware([
+		\App\Http\Middleware\RedirectIfKepalaAuthenticated::class,
+		\App\Http\Middleware\RedirectIfAdminAuthenticated::class,
+	]);
 
-Route::post('kepala/login', function (\Illuminate\Http\Request $request) {
-	if ($request->session()->has('kepala_keluarga_id')) return redirect()->route('kepala.dashboard');
-	if (Auth::check()) return redirect()->route('admin.dashboard');
-	return app()->make(KepalaAuthController::class)->login($request);
-})->name('kepala.login.post');
+Route::post('kepala/login', [KepalaAuthController::class, 'login'])
+	->name('kepala.login.post')
+	->middleware([
+		\App\Http\Middleware\RedirectIfKepalaAuthenticated::class,
+		\App\Http\Middleware\RedirectIfAdminAuthenticated::class,
+	]);
 
 Route::get('kepala/dashboard', [KepalaAuthController::class, 'dashboard'])->name('kepala.dashboard');
 // Cetak Kartu Keluarga (print view)
