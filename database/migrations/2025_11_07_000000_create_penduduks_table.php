@@ -11,7 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('penduduks', function (Blueprint $table) {
+        if (! Schema::hasTable('penduduks')) {
+            Schema::create('penduduks', function (Blueprint $table) {
             $table->id();
             $table->string('nik', 16)->unique();
             $table->string('nama');
@@ -24,7 +25,8 @@ return new class extends Migration
             $table->string('kecamatan')->nullable();
             $table->string('kelurahan')->nullable();
             $table->timestamps();
-        });
+            });
+        }
     }
 
     /**

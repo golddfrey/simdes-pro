@@ -13,15 +13,17 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('notifications', function (Blueprint $table) {
-            // default Laravel structure for database notifications
-            $table->uuid('id')->primary();
-            $table->string('type');
-            $table->morphs('notifiable');
-            $table->text('data');
-            $table->timestamp('read_at')->nullable();
-            $table->timestamps();
-        });
+        if (! Schema::hasTable('notifications')) {
+            Schema::create('notifications', function (Blueprint $table) {
+                // default Laravel structure for database notifications
+                $table->uuid('id')->primary();
+                $table->string('type');
+                $table->morphs('notifiable');
+                $table->text('data');
+                $table->timestamp('read_at')->nullable();
+                $table->timestamps();
+            });
+        }
     }
 
     /**
