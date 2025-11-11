@@ -211,6 +211,15 @@
             </select>
           </div>
           <div>
+            <label class="block text-sm">Pendidikan</label>
+            <select wire:model="form.pendidikan" class="w-full border rounded px-3 py-2">
+              <option value="">-- Pilih --</option>
+              @foreach(['Belum Sekolah','SD','SMP','SMA','Diploma','Sarjana','Pascasarjana'] as $opt)
+                <option value="{{ $opt }}">{{ $opt }}</option>
+              @endforeach
+            </select>
+          </div>
+          <div>
             <label class="block text-sm">Nomor Telepon</label>
             <input type="text" wire:model="form.nomor_telepon" class="w-full border rounded px-3 py-2">
           </div>

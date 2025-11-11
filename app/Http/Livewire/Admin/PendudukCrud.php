@@ -43,6 +43,7 @@ class PendudukCrud extends Component
         'nama' => '',
         'jenis_kelamin' => '',
         'tempat_lahir' => '',
+        'pendidikan' => '',
         'tanggal_lahir' => '',
         'agama' => '',
         'status_perkawinan' => '',
@@ -63,6 +64,7 @@ class PendudukCrud extends Component
     protected $rules = [
         'form.nik' => 'required|string|size:16|unique:penduduks,nik',
         'form.nama' => 'required|string|max:255',
+        'form.pendidikan' => 'nullable|string|max:100',
         'form.jenis_kelamin' => 'nullable|in:L,P',
         'form.tanggal_lahir' => 'nullable|date',
         'form.status_perkawinan' => 'nullable|string',
@@ -160,6 +162,7 @@ class PendudukCrud extends Component
         $this->form = [
             'nik' => $p->nik,
             'nama' => $p->nama,
+            'pendidikan' => $p->pendidikan ?? '',
             'jenis_kelamin' => $p->jenis_kelamin,
             'tempat_lahir' => $p->tempat_lahir,
             'tanggal_lahir' => optional($p->tanggal_lahir)->format('Y-m-d') ?? ($p->tanggal_lahir ? explode('T',$p->tanggal_lahir)[0] : ''),
@@ -281,6 +284,8 @@ class PendudukCrud extends Component
         $this->form = [
             'nik' => '', 'nama' => '', 'jenis_kelamin' => '', 'tempat_lahir' => '', 'tanggal_lahir' => '', 'agama' => '', 'status_perkawinan' => '', 'pekerjaan' => '', 'nomor_telepon' => '', 'alamat' => '', 'kecamatan' => '', 'kelurahan' => '', 'kota' => 'Kota Makassar'
         ];
+        // include pendidikan in reset form defaults
+        $this->form['pendidikan'] = '';
         $this->rules['form.nik'] = 'required|string|size:16|unique:penduduks,nik';
     }
 
