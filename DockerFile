@@ -1,0 +1,48 @@
+# Dockerfile untuk demo Laravel simple (untuk Render)
+FROM php:8.2-cli
+
+# set working dir
+WORKDIR /var/www/html
+
+# instal tools & ekstensi PHP yang sering dipakai
+RUN apt-get update && apt-get install -y \
+    git \
+    curl \
+    zip \
+    unzip \
+    libzip-dev \
+    libicu-dev \
+    libonig-dev \
+    npm \
+ && docker-php-ext-install pdo pdo_mysql intl zip
+
+# pasang composer (ambil dari image composer resmi)
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+
+# salin project
+COPY . .
+
+# set permission (pastikan storage & bootstrap/cache bisa ditulis)
+RUN mkdir -p storage/framework storage/logs storage/app public && \
+    chown -R www-data:www-data storage bootstrap/cache || true
+
+# install composer deps
+RUN composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist || true
+
+# install node deps & build assets (opsional — kalau proyekmu pakai mix/vite)
+# NOTE: beberapa image minimal tidak punya npm; jika error, kamu bisa hapus block ini
+RUN if [ -f package.json ]; then npm install && npm run build || true; fi
+
+# buat file sqlite kosong (untuk demo agar nggak perlu DB eksternal)
+RUN mkdir -p database && touch database/database.sqlite && chmod 666 database/database.sqlite
+
+# jalankan migration saat build (agar demo punya tabel)
+RUN php artisan key:generate --ansi || true
+RUN php artisan migrate --force --no-interaction || true
+
+# gunakan port dari environment (Render memberi $PORT)
+ENV PORT 10000
+EXPOSE 10000
+
+# start server (gunakan PORT yang disediakan Render)
+CMD php artisan serve --host=0.0.0.0 --port=${PORT}
